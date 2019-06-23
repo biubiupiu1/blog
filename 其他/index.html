@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>其他</title>
+</head>
+<body>
+<div>
+  <span></span>
+</div>
+<p></p>
+</body>
+<script>
+    function traversal(node) {
+        //对node的处理
+        if (node && node.nodeType === 1) {
+            console.log(node.tagName);
+        }
+        var i = 0,
+            childNodes = node.childNodes,
+            item;
+        for (; i < childNodes.length; i++) {
+            item = childNodes[i];
+            if (item.nodeType === 1) {
+                //递归先序遍历子节点
+                traversal(item);
+            }
+        }
+    }
+
+    console.log(document.childNodes)
+    traversal(document);
+
+    Function.prototype.bind2 = function () {
+        const context = arguments[0] || window
+        const argument = Array.from(arguments).splice(1, arguments.length - 1)
+        context.fn = this;
+        return function () {
+            context.fn(...argument, ...arguments);
+            delete context.fn
+        }
+    }
+
+    function test(a, b, c) {
+        console.log(this.test, a, b, c);
+        return this;
+    }
+
+    let _test = test.bind2({test: 22}, 1);
+
+    _test(2, 3);
+
+
+    // 支持多层then链式调用(then中可返回新的promise进行异步流控制)，支持catch及finally
+    function Promise2(fn) {
+        this.onFulfilledCb = null
+        this.onRejectedCb = null
+        this.onFinallyCb = null
+        this.onCatchCb = null
+        this.thenResultPromise = null
+        this.promiseValue = null
+        this.promiseStatus = 'pending' // pending, fulfilled, rejected
+        this.timer = null
+        var _this = this
+        var resolve = function (data) {
+            _this.promiseValue = data
+            try {
+                _this.onFulfilledCb &&
+                (_this.thenResultPromise = _this.onFulfilledCb(data))
+            } catch (e) {
+                _this.onCatchCb && _this.onCatchCb(e)
+            }
+            _this.onFinallyCb && _this.onFinallyCb()
+            _this.promiseStatus = 'fulfilled'
+        }
+
+        var reject = function (error) {
+            _this.promiseValue = error
+            try {
+                _this.onRejectedCb
+                    ? (_this.thenResultPromise = _this.onRejectedCb(error))
+                    : _this.onCatchCb && _this.onCatchCb(error) // 不处理reject的数据会被catch到的
+            } catch (e) {
+                _this.onCatchCb && _this.onCatchCb(e)
+            }
+            _this.onFinallyCb && _this.onFinallyCb()
+            _this.promiseStatus = 'rejected'
+        }
+
+        if (typeof fn === 'function') {
+            // 异步回调串联
+            fn(resolve, reject)
+        } else {
+            resolve()
+        }
+    }
+
+    Promise2.prototype = {
+        then: function (onFulfilled, onRejected) {
+            var _this = this
+
+            if (_this.promiseStatus == 'pending') {
+                return new Promise2(function (resolve, reject) {
+                    onFulfilled && (_this.onFulfilledCb = function () {
+                        try {
+                            var x = onFulfilled(_this.promiseValue);
+                            if (x instanceof Promise2) {
+                                x.then(resolve, reject);
+                            } else {
+                                resolve(x);
+                            }
+                        } catch (e) {
+                            reject(e)
+                        }
+                    });
+                    onRejected && (_this.onRejectedCb = function () {
+                        try {
+                            var x = onRejected(_this.promiseValue);
+                            if (x instanceof Promise2) {
+                                x.then(resolve, reject);
+                            } else {
+                                resolve(x);
+                            }
+                        } catch (e) {
+                            reject(e)
+                        }
+                    })
+
+                })
+            }
+
+            if (_this.promiseStatus == 'fulfilled') {
+                return new Promise2(function (resolve, reject) {
+                    try {
+                        var x = onFulfilled(_this.promiseValue);
+                        if (x instanceof Promise2) {
+                            x.then(resolve, reject);
+                        } else {
+                            resolve(x);
+                        }
+                    } catch (e) {
+                        reject(e)
+                    }
+                })
+            }
+
+            if (_this.promiseStatus == 'rejected') {
+                return new Promise2(function (resolve, reject) {
+                    try {
+                        var x = onRejected(_this.promiseValue);
+                        if (x instanceof Promise2) {
+                            x.then(resolve, reject);
+                        } else {
+                            resolve(x);
+                        }
+                    } catch (e) {
+                        reject(e)
+                    }
+                })
+            }
+        },
+        catch: function (onCatch) {
+            this.onCatchCb = onCatch
+            return this // 实现链式调用
+        },
+        finally: function (onFinally) {
+            this.onFinallyCb = onFinally
+        }
+    }
+
+    var myPromise = new Promise2(function(resolve, reject) {
+        // 当异步代码执行成功时，我们才会调用resolve(...), 当异步代码失败时就会调用reject(...)
+        // 在本例中，我们使用setTimeout(...)来模拟异步代码，实际编码时可能是XHR请求或是HTML5的一些API方法.
+        console.log('----------------- 流程开始 --------------------')
+        setTimeout(function() {
+            resolve('promise初始化resolve成功!') // 代码正常执行！
+        }, 500)
+    })
+    myPromise
+    .then(function(successMessage) {
+        console.log(
+            'myPromise then 1 收到 resolveMessage:' + successMessage
+        );
+        return new Promise2(function(resolve, reject) {
+            setTimeout(function() {
+                reject('from then 1')
+            }, 3000)
+        })
+    })
+    .then(
+        function(successMessage) {
+            console.log(
+                'myPromise then 2 收到 resolveMessage:' + successMessage
+            )
+            return new Promise2(function(resolve, reject) {
+                setTimeout(function() {
+                    resolve('from then 2')
+                }, 2000)
+            })
+        },
+        function(failMessage) {
+            console.log(
+                'myPromise then 2 收到 rejectMessage:' + failMessage
+            )
+            return new Promise2(function(resolve, reject) {
+                setTimeout(function() {
+                    resolve('from then 2')
+                }, 1000)
+            })
+        }
+    )
+    .then(function(successMessage) {
+        console.log(
+            'myPromise then 3 收到 resolveMessage:' + successMessage
+        )
+        return new Promise2(function(resolve, reject) {
+            setTimeout(function() {
+                reject('from then 3')
+            }, 1000)
+        })
+    })
+    .catch(function(error) {
+        console.log('caught rejected data:')
+        console.log(error)
+    })
+    .finally(function() {
+        console.log('-----------全部处理完毕！-----------')
+    })
+
+</script>
+</html>
