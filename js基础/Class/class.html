@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>class</title>
+</head>
+<body>
+<script>
+    class Test {
+        constructor() {
+            this.a = 1;
+        }
+
+        say() {
+            console.log("hello")
+        }
+    }
+
+    let test = new Test();
+
+    console.log(Object.getOwnPropertyNames(Test.prototype));
+
+    var Point = function (x, y) {
+        // ...
+    };
+
+    Point.prototype.toString = function () {
+        // ...
+    };
+
+    console.log(Object.keys(Point.prototype));
+    // ["toString"]
+    console.log(Object.getOwnPropertyNames(Point.prototype))
+
+    // ["constructor","toString"]
+
+
+    class Me {
+        test() {
+            console.log(Me.name)
+        }
+    }
+
+
+    let me = new Me();
+
+    me.test();
+
+    console.log(Me.name);
+
+
+    let person = new class {
+        constructor(name) {
+            this.name = name;
+        }
+
+        sayName() {
+            console.log(this.name);
+        }
+    }('张三');
+
+    person.sayName(); // "张三"
+
+    class Foo {
+        static bar() {
+            this.baz();
+        }
+
+        static baz() {
+            console.log('hello');
+        }
+
+        baz() {
+            console.log('world');
+        }
+    }
+
+    new Foo().constructor.bar();
+
+    class MyClass {
+        static myStaticProp = 42;
+
+        constructor() {
+            console.log(MyClass.myStaticProp); // 42
+        }
+    }
+
+    console.log(new MyClass());
+
+
+    const bar = Symbol('bar');
+    const snaf = Symbol('snaf');
+
+    class myClass {
+
+        // 公有方法
+        foo(baz) {
+            this[bar](baz);
+        }
+
+        // 私有方法
+        [bar](baz) {
+            return this[snaf] = baz;
+        }
+
+    }
+
+    console.log(new myClass()[bar])
+
+    class Rectangle {
+        constructor(length, width) {
+            console.log(new.target);
+            // ...
+        }
+    }
+
+    class Square extends Rectangle {
+        constructor(length, width) {
+            console.log(new.target);
+            super(length, width);
+        }
+    }
+
+    var obj = new Square(3); // 输出 false
+
+
+    class Point1 {
+
+        test = 10;
+
+        say() {
+
+        }
+    }
+
+    class ColorPoint extends Point1 {
+        say2() {
+        }
+    }
+
+    let objT = Object.create({test: 1});
+
+    console.log(objT);
+
+    console.log(Object.getPrototypeOf(objT));
+
+    let color = new ColorPoint();
+
+    console.log(color);
+
+    console.log(Object.getPrototypeOf(color));
+
+    console.log(ColorPoint.__proto__);
+
+    let point = new Point1();
+
+    // console.log(Object.assign({}, point));      //assign 不会合并原型链上的数据
+    // console.log(point);
+
+
+    (function () {
+        class Parent {
+            static myMethod(msg) {
+                console.log('static', msg);
+            }
+
+            myMethod(msg) {
+                console.log('instance', msg);
+            }
+
+            b = 1
+        }
+
+        class Child extends Parent {
+            static myMethod(msg) {
+                super.myMethod(msg);
+            }
+
+            a = 1
+
+            test() {
+
+            }
+        }
+
+        console.log(Parent.prototype);
+        console.log(new Parent(), new Child());
+        console.log(Child.prototype, )
+        console.log(Child.__proto__)
+
+
+
+        Child.myMethod(1); // static 1
+
+        var child = new Child();
+        child.myMethod(2); // instance 2
+
+
+        class A {
+            constructor() {
+                this.x = 1;
+            }
+            print() {
+                console.log(this.x);
+            }
+        }
+
+        class B extends A {
+            constructor() {
+                super();
+                this.x = 2;
+            }
+            m() {
+                super.print();
+            }
+        }
+
+        let b = new B();
+        console.log(b);
+        b.m() // 2
+
+    })()
+
+    function MyArray() {
+        Array.apply(this, arguments);
+    }
+
+    MyArray.prototype = Object.create(Array.prototype);
+    MyArray.prototype.constructor = MyArray;
+
+    console.log(MyArray.prototype)
+    console.log(new MyArray())
+
+    let Pa = function () {
+        this.a = 2;
+    }
+
+    Pa.prototype.test = 1;
+    Object.defineProperty(Pa.prototype, 'constructor', {
+        enumerable: true
+    })
+
+    let $pa = new Pa();
+
+    for (let key in $pa) {
+        console.log(key)
+    }
+
+    console.log(Object.assign({}, $pa))
+
+    console.log(Object.keys($pa));
+
+    console.log($pa);
+
+    console.log($pa.hasOwnProperty('constructor'));
+
+    console.log(Object.getOwnPropertyNames($pa));
+
+
+    (function () {
+
+        var parent = Object.create(Object.prototype, {
+            a: {
+                value: 1,
+                writable: true,
+                enumerable: true,
+                configurable: true
+            }
+        });
+
+        var child = Object.create(parent, {
+            b: {
+                value: 2,
+                writable: true,
+                enumerable: true,
+                configurable: true
+            },
+            c: {
+                value: 3,
+                writable: true,
+                enumerable: false,
+                configurable: true
+            }
+        });
+
+        console.log(child)
+
+        var arr = new Array(6)
+        arr[0] = "George"
+        arr[1] = "John"
+        arr[2] = "Thomas"
+        arr[3] = "James"
+        arr[4] = "Adrew"
+        arr[5] = "Martin"
+
+        document.write(arr + "<br />")
+        //console.log(arr.splice(2,0,"William"))
+        console.log(arr.splice(2, 0))
+        document.write(arr + "<br />")
+
+    })()
+
+</script>
+</body>
+</html>
