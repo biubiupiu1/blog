@@ -2,9 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title>内置对象</title>
 </head>
 <body>
-$END$
+
 </body>
+<script>
+    (function () {
+        let arr = ["今天天气不错", "", "早上好"];
+        let newVal = arr.reduce((acc, curVal) => {
+            return acc.concat(curVal.split(''));
+        }, []);
+        console.log(newVal);
+        let random = (start, end) => {
+            let dis = end - start;
+            let randomNum = Math.random();
+            return Math.ceil(randomNum * dis + start);
+        };
+        // for (let i = 0; i < 50; i++) {
+        //     console.log(random(1, 5))
+        // }
+        let arr1 = [1, 2, 3];
+        let str = "hello World";
+        console.log(str.toLowerCase(), str);
+        console.log(+'12.3');
+        let obj = {
+            val: '',
+            get test() {
+                return this.val;
+            },
+            set test(val) {
+                this.val = val;
+            }
+        };
+        obj.test = 'ss'
+        console.log(obj)
+
+        var regex = /\d{2,5}/g;
+        var string = "123123412345123456";
+        console.log(string.match(regex));
+        // => ["123", "1234", "12345", "12345"]
+
+
+        let fac = function (n, total) {
+            if (n === 1)
+                return total;
+            else {
+                total = total * n--;
+                return fac(n, total)
+            }
+        }
+
+        console.log(fac(5, 1))
+    })()
+</script>
 </html>

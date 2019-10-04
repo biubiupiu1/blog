@@ -1,10 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Proxy</title>
 </head>
 <body>
-$END$
+<script>
+    let proto = new Proxy({}, {
+        get(target, propertyKey, receiver) {
+            console.log('GET ' + propertyKey);
+            return target[propertyKey];
+        }
+    });
+
+    let obj = Object.create(proto, {
+        'a': {
+            value: 1,
+        }
+    });
+    console.log(obj.a);
+    console.log(obj.bar);
+
+    function reverse(num) {
+        if (typeof num === 'number') {
+            num = num.toString().split('');
+        }
+        if (!Array.isArray(num)) {
+            throw new Error('...')
+        }
+        if (num.length === 1)
+            return num[0];
+        return `${num.pop()}${reverse(num)}`
+    }
+
+    console.log(reverse(65488))
+
+    function changeObjProperty(o) {
+        o.siteUrl = "http://www.baidu.com"
+        o = new Object()
+        o.siteUrl = "http://www.google.com"
+    }
+
+    let webSite = new Object();
+    changeObjProperty(webSite);
+    console.log(webSite.siteUrl);
+
+
+    let arr = [1, 2, 3, 4];
+    arr.reduce(function (prev, cur) {
+        console.log(prev, cur);
+        return cur;
+    })
+
+    let domtest = new Proxy({}, {
+        get(target, p, receiver) {
+            return function () {
+            }
+        }
+    })
+
+    console.log(domtest.test)
+
+    const dom = new Proxy({}, {
+        get(target, property) {
+            return function (attrs = {}, ...children) {
+                const el = document.createElement(property);
+                for (let prop of Object.keys(attrs)) {
+                    el.setAttribute(prop, attrs[prop]);
+                }
+                for (let child of children) {
+                    if (typeof child === 'string') {
+                        child = document.createTextNode(child);
+                    }
+                    el.appendChild(child);
+                }
+                return el;
+            }
+        }
+    });
+
+    const el = dom.div({},
+        'Hello, my name is ',
+        dom.a({href: '//example.com'}, 'Mark'),
+        '. I like:',
+        dom.ul({},
+            dom.li({}, 'The web'),
+            dom.li({}, 'Food'),
+            dom.li({}, '…actually that\'s it')
+        )
+    );
+
+    document.body.appendChild(el);
+
+
+    const proxy = new Proxy({}, {
+        get: function (target, property, receiver) {
+            return receiver;
+        }
+    });
+
+    console.log(proxy.ss === proxy); // true
+
+    console.log(Function.prototype.apply.call === Function.prototype.call)
+
+    console.log(Function.prototype.apply.call(() => {
+        console.log("test")
+    }));
+
+    Function.prototype.apply(function () {
+        console.log("我要睡觉1")
+    }, function () {
+        console.log("我要睡觉2")
+    }, [])
+
+    var handler = {
+        get: function (target, name) {
+            if (name === 'prototype') {
+                return Object.prototype;
+            }
+            return 'Hello, ' + name;
+        },
+
+        apply: function (target, thisBinding, args) {
+            return args[0];
+        },
+
+        construct: function (target, args) {
+            return {};
+        }
+    };
+
+    var fproxy = new Proxy(function (x, y) {
+        console.log("constructor")
+        return x + y;
+    }, handler);
+
+    console.log(new fproxy(1, 2))
+
+    let testClass = function () {
+
+    }
+
+    console.log(testClass.prototype.constructor === testClass)
+
+    function extend(sup, base) {
+        var descriptor = Object.getOwnPropertyDescriptor(
+            base.prototype, "constructor"
+        );
+        base.prototype = Object.create(sup.prototype);
+        var handler = {
+            construct: function (target, args) {
+                var obj = Object.create(base.prototype);
+                this.apply(target, obj, args);
+                return obj;
+            },
+            apply: function (target, that, args) {
+                sup.apply(that, args);
+                base.apply(that, args);
+            }
+        };
+        var proxy = new Proxy(base, handler);
+        descriptor.value = proxy;
+        Object.defineProperty(base.prototype, "constructor", descriptor);
+        return proxy;
+    }
+
+    var Person = function (name) {
+        this.name = name
+    };
+
+    let _Boy = function (name, age) {
+        this.age = age;
+    }
+
+    var Boy = extend(Person, _Boy);
+
+    console.log(Boy.__proto__)
+
+    Boy.prototype.sex = "M";
+
+    var Peter = new Boy("Peter", 13);
+    console.log(Peter.sex);  // "M"
+    console.log(Peter.name); // "Peter"
+    console.log(Peter.age);  // 13
+
+
+    let testClass1 = function () {
+
+    }
+
+    testClass1.prototype.a = "a";
+
+    console.log(new Proxy(testClass, {}))
+
+    var twice = {
+        apply(target, ctx, args) {
+            console.log(ctx)
+            return Reflect.apply(...arguments) * 2;
+        }
+    };
+
+    function sum(left, right) {
+        console.log("sum")
+        return left + right;
+    };
+    var proxy1 = new Proxy(sum, twice);
+    console.log(proxy1)
+    proxy1(1, 2) // 6
+    proxy1.call(null, 5, 6) // 22
+    proxy1.apply(null, [7, 8]) // 30
+
+    var p = new Proxy(function () {
+    }, {
+        construct: function (target, args, newTarget) {
+            console.log('called: ' + args.join(', '));
+            return {value: args[0] * 10};
+        }
+    });
+
+    console.log(new p(1).value);
+
+
+    const target = {
+        m: function () {
+            console.log(this);
+        }
+    };
+    const handler1 = {};
+
+    target.m();
+
+    const proxy2 = new Proxy(target, handler1);
+
+    target.m();
+
+    proxy2.m();
+
+    (function () {
+        const target = new Date();
+        const handler = {};
+        const proxy = new Proxy(target, handler);
+        //error
+        //proxy.getDate();
+
+    })()
+
+    var docCookies = new Proxy(docCookies, {
+        "get": function (oTarget, sKey) {
+            return oTarget[sKey] || oTarget.getItem(sKey) || undefined;
+        },
+        "set": function (oTarget, sKey, vValue) {
+            if (sKey in oTarget) {
+                return false;
+            }
+            return oTarget.setItem(sKey, vValue);
+        },
+        "deleteProperty": function (oTarget, sKey) {
+            if (sKey in oTarget) {
+                return false;
+            }
+            return oTarget.removeItem(sKey);
+        },
+        "enumerate": function (oTarget, sKey) {
+            return oTarget.keys();
+        },
+        "ownKeys": function (oTarget, sKey) {
+            return oTarget.keys();
+        },
+        "has": function (oTarget, sKey) {
+            return sKey in oTarget || oTarget.hasItem(sKey);
+        },
+        "defineProperty": function (oTarget, sKey, oDesc) {
+            if (oDesc && "value" in oDesc) {
+                oTarget.setItem(sKey, oDesc.value);
+            }
+            return oTarget;
+        },
+        "getOwnPropertyDescriptor": function (oTarget, sKey) {
+            var vValue = oTarget.getItem(sKey);
+            return vValue ? {
+                "value": vValue,
+                "writable": true,
+                "enumerable": true,
+                "configurable": false
+            } : undefined;
+        },
+    });
+
+    /* Cookies 测试 */
+
+    alert(docCookies.my_cookie1 = "First value");
+    alert(docCookies.getItem("my_cookie1"));
+
+    docCookies.setItem("my_cookie1", "Changed value");
+    alert(docCookies.my_cookie1);
+
+</script>
 </body>
 </html>

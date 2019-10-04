@@ -2,9 +2,50 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>hash</title>
 </head>
 <body>
-$END$
+<a href="#index">index</a>
+<a href="#foo">foo</a>
+<a href="#bar">bar</a>
+<div class="container"></div>
 </body>
+<script>
+
+    let container = document.querySelector(".container");
+
+    function Router(routes) {
+        this.routes = routes || {};
+        this.addEvent();
+        this.currentPage = "";
+        this.load();
+    }
+
+    Router.prototype.addEvent = function () {
+        window.addEventListener("hashchange", this.load.bind(this))
+    }
+
+    Router.prototype.register = function (page, callback) {
+        this.routes[page] = callback;
+    }
+
+    Router.prototype.load = function (event = {}) {
+        let page = location.hash.slice(1);
+        if (!page)
+            page = "index";
+        if (page === this.currentPage)
+            return;
+        console.log("load");
+        this.currentPage = page;
+        let route = this.routes[page];
+        if (route)
+            route();
+    }
+
+    const router = new Router({
+        index: () => container.innerText = "我是index",
+        foo: () => container.innerText = "我是foo",
+        bar: () => container.innerText = "我是bar",
+    });
+</script>
 </html>

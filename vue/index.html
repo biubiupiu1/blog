@@ -2,9 +2,161 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title>Vue</title>
+  <link href="https://cdn.bootcss.com/animate.css/3.7.2/animate.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/vue-router@2.0.0/dist/vue-router.js"></script>
 </head>
 <body>
-$END$
+<style>
+  .parent {
+    width: 200px;
+    height: 200px;
+    background: #71bc7c;
+  }
+
+  .child {
+    width: 100px;
+    height: 100px;
+    background: #ff9425;
+  }
+</style>
+<div id="app">
+  <div v-for="item in lists" :key="item.id">{{ item.name }}</div>
+  <div v-on:click="sayHi($event)">sayHi</div>
+  <div style="width: 400px; height: 400px; background: #71bc7c" @click.capture="customEvent('1 capture')" @click="customEvent('1')">
+    <div style="width: 300px; height: 300px; background: #1c3fbc" @click="customEvent('2')" @click.capture="customEvent('2 capture')">
+      <a href="" style="display: block; width: 200px; height: 200px; background: #bc008a" @click.prevent.self="customEvent('3')" @click.capture="customEvent('3 capture')">
+        <div style="width: 100px; height: 100px; background: #bc6b14" @click.capture="customEvent('4 capture')" @click="customEvent('4')"></div>
+      </a>
+    </div>
+  </div>
+  <input v-focus type="text" @keyup.enter="customEvent('enter')">
+  <div @click.ctrl="customEvent('ctrl+click')">ctrl+click</div>
+  <div @click.middle="customEvent('middle click')">middle click</div>
+  <count-item :title.sync="btnTitle" id="s" @my-event="customEvent('myEvent')">
+    <p>slot</p>
+  </count-item>
+  <div id="example-3">
+    <button @click="show = !show">
+      Toggle render
+    </button>
+    <transition
+      name="custom-classes-transition"
+      enter-active-class="animated tada"
+      leave-active-class="animated bounceOutRight"
+    >
+      <p v-if="show">hello</p>
+    </transition>
+  </div>
+  <router-link :to="{name: '/bar'}">bar</router-link>
+  <router-link :to="{name: '/foo'}">foo</router-link>
+  <router-view></router-view>
+</div>
 </body>
+<script>
+
+    Vue.component('count-item', {
+        template: "<button @click='add' v-bind='$attrs'>{{title}} : {{count}}</button>",
+        inheritAttrs: false,
+        props: ['title'],
+        data() {
+            return {
+                count: 0,
+            }
+        },
+        inject: ["getParentData"],
+        created() {
+            console.log(this.$slots);
+            this.$emit('update:title', "我是在子组件修改后的title");
+            console.log(this.getParentData)
+            setTimeout(() => {
+                console.log(this.getParentData)
+            }, 4000)
+        },
+        methods: {
+            add() {
+                this.$emit("my-event");
+                this.count++;
+            }
+        }
+    });
+
+    const Foo = {
+        template: '<div>foo</div>',
+        created() {
+          console.log("Foo created");
+          console.log(this.$route)
+        },
+        name: 'foo'
+    };
+    const Bar = {template: '<div>bar</div>', name: 'bar'}
+
+    const routes = [
+        {path: '/foo', component: Foo},
+        {path: '/bar', component: Bar}
+    ]
+
+    const router = new VueRouter({
+        mode: "history",
+        routes // (缩写) 相当于 routes: routes
+    })
+
+    let vm = new Vue({
+        el: "#app",
+        router,
+        data: {
+            text: "hello world",
+            lists: [
+                {
+                    name: "foo",
+                    id: 1
+                },
+                {
+                    name: "bar",
+                    id: 2
+                },
+            ],
+            btnTitle: "我是btn",
+            parentData: "我是父组件数据",
+            show: true
+        },
+        provide: function () {
+            return {
+                getParentData: this.parentData
+            }
+        },
+        created() {
+            setTimeout(() => {
+                this.cut();
+            }, 2000)
+            setTimeout(() => {
+                this.parentData = "我是修改后的父组件数据";
+            }, 2000)
+        },
+        methods: {
+            cut() {
+                this.text = "1"
+            },
+            sayHi(event) {
+                console.log(event);
+                event.preventDefault()
+            },
+            customEvent(msg) {
+                console.log(msg)
+            }
+        },
+        directives: {
+            focus: {
+                bind() {
+                    console.log("bind")
+                },
+                inserted(el) {
+                    el.focus();
+                }
+            }
+        }
+    });
+</script>
 </html>

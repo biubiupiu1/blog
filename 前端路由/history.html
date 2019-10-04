@@ -1,10 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>$Title$</title>
+    <title>history</title>
 </head>
+
 <body>
-$END$
+    <a href="/index">index</a>
+    <a href="/foo">foo</a>
+    <a href="/bar">bar</a>
+    <div class="container"></div>
 </body>
+<script>
+    /*
+    *
+    *对于单页应用的 history 模式而言，url 的改变只能由下面四种方式引起：
+
+    点击浏览器的前进或后退按钮
+    点击 a 标签
+    在 JS 代码中触发 history.pushState 函数
+    在 JS 代码中触发 history.replaceState 函数
+    *
+    *
+    * 需要注意的是，仅仅调用pushState方法或replaceState方法 ，
+    * 并不会触发popstate事件，只有用户点击浏览器倒退按钮和前进按钮，
+    * 或者使用 JavaScript 调用back、forward、go方法时才会触发。
+    */
+
+    let container = document.querySelector(".container")
+
+    class Router {
+        constructor(routes) {
+            this.routes = routes || {};
+            this.listenPopState();
+            this.listenALink();
+            this.currentPage = "";
+            this.load();
+        }
+
+        listenPopState() {
+            window.addEventListener("popstate", function (e) {
+                let href = e.state.href;
+                this.load(href);
+            }.bind(this))
+        }
+
+        listenALink() {
+            window.addEventListener("click", function (e) {
+                e.preventDefault();
+                let dom = e.target;
+                let name = dom.tagName.toLowerCase();
+                if (name === "a" && dom.getAttribute("href")) {
+                    let href = dom.getAttribute("href");
+                    history.pushState({ href }, "", href);
+                    this.load(href);
+                }
+            }.bind(this))
+        }
+
+        load(path) {
+            if (!path)
+                path = "/index";
+            if (path === this.currentPage)
+                return;
+            this.currentPage = path;
+            let route = this.routes[path];
+            if (route)
+                route();
+        }
+    }
+
+    const route = new Router({
+        "/index": () => container.innerText = "我是index",
+        "/foo": () => container.innerText = "我是foo",
+        "/bar": () => container.innerText = "我是bar",
+    });
+</script>
+
 </html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>iframe</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body,
+    html {
+        height: 100%;
+    }
+</style>
+
+<body>
+    <iframe scrolling="no" width="100%" height="100%" src="son.html" frameborder="0"></iframe>
+</body>
+<script>
+    window.onload = function () {
+        let iframe = document.querySelector("iframe")
+        console.log(iframe.contentDocument.querySelector(".son").textContent)
+    }
+</script>
+
+</html>

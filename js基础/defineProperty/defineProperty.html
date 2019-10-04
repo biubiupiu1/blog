@@ -2,9 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title>defineProperty</title>
 </head>
 <body>
-$END$
+<script>
+    let obj = {};
+
+    let desc = function () {
+    };
+
+    desc.prototype.writable = true;
+
+    let descriptor = new desc();
+    descriptor.get = function () {
+        return "rouse"
+    };
+
+    //Object.defineProperty(obj, "name", descriptor)
+
+    let obj2 = {};
+
+    Object.defineProperty(obj2, "name", {
+        configurable: false,
+        writable: true
+    })
+    Object.defineProperty(obj2, "name", {
+        value: "4",
+    })
+    console.log(obj2);
+    obj2.name = ""
+    console.log(obj2);
+</script>
 </body>
 </html>

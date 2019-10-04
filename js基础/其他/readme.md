@@ -125,3 +125,62 @@ console.log(animals.slice(2, 4));
 console.log(animals.slice(1, 5));
 // expected output: Array ["bison", "camel", "duck", "elephant"]
 ````
+
+#### Math
+
++ Math.floor()
+
+>  返回小于或等于一个给定数字的最大整数。**当是负数时**
+
++ Math.ceil() 
+
+>  返回大于或等于一个给定数字的最大整数。**当是负数时**
+
+````javascript
+Math.floor( 45.95); // 45 
+Math.floor( 45.05); // 45 
+Math.floor( 4 ); // 4 
+Math.floor(-45.05); // -46 
+Math.floor(-45.95); // -46
+
+Math.ceil(.95);    // 1
+Math.ceil(4);      // 4
+Math.ceil(7.004);  // 8
+Math.ceil(-0.95);  // -0
+Math.ceil(-4);     // -4
+Math.ceil(-7.004); // -7
+````
+
++ Math.round()
+
+> 函数返回一个数字四舍五入后最接近的整数。如果参数部分大于0.5则舍入到相邻绝对值更大的数，
+如果小于0.5则舍入到相邻绝对值更小的数，**如果恰好等于0.5则舍入到正无穷方向上的整数**
+
+````javascript
+x = Math.round(20.49);      //20
+x = Math.round(20.5);       //21
+x = Math.round(-20.49);     //-20
+x = Math.round(-20.5);      //-20
+x = Math.round(-20.51)      //-21
+````
+
++ Math.random()
+
+>  函数返回一个浮点,  伪随机数在范围[0，1)，也就是说，从0（包括0）往上，但是不包括1（排除1）
+
+````javascript
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min; 
+}
+//得到一个两数之间的随机数
+````
+
+````javascript
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //不含最大值，含最小值
+}
+//得到一个两数之间的随机整数（能取最小不能取最大）
+//试试 （都能取到最小和最大）
+````
