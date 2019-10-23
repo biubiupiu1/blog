@@ -20,9 +20,41 @@
 </style>
 
 <body>
-    <iframe scrolling="no" width="100%" height="100%" src="son.html" frameborder="0"></iframe>
+    <iframe scrolling="no" width="100%" height="100%" src="https://www.cocos.com/docs" frameborder="0"></iframe>
 </body>
 <script>
+
+    /*
+        对于第二种方式的跨域（主域相同而子域不同）,可以使用iframe进行解决。
+        在两个不同子域下(某一方使用iframe嵌套在另一方)，
+        即:
+        http: //www.foo.com/a.html和http: //script.foo.com/b.html
+        两个文件中分别加上document.domain = ‘foo.com’,指定相同的主域，然后,两个文档就可以进行交互。
+
+
+        如果你设置的iframe的域名和你top window的域名完全不同。 则可以使用CDM(cross document messaging)进行跨域消息的传递。该API的兼容性较好 ie8+都支持.
+        发送消息: 使用postmessage方法
+        接受消息: 监听message事件
+
+        <iframe src="http://tuhao.com" name="sendMessage"></iframe>
+        //当前脚本
+        let ifr = window.frames['sendMessage'];
+        //使用iframe的window向iframe发送message。
+        ifr.postmessage('give u a message', "http://tuhao.com");
+        //tuhao.com的脚本
+        window.addEventListener('message', receiver, false);
+        function receiver(e) {
+            if (e.origin == 'http://tuhao.com') {
+                if (e.data == 'give u a message') {
+                    e.source.postMessage('received', e.origin);  //向原网页返回信息
+                } else {
+                    alert(e.data);
+                }
+            }
+        }
+    */
+    
+
     window.onload = function () {
         let iframe = document.querySelector("iframe")
         console.log(iframe.contentDocument.querySelector(".son").textContent)

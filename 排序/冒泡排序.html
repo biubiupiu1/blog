@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        //冒泡排序
+        let input = [1, 5, 2, 8, 4]
+        for (let i = 0; i < input.length - 1; i++) {
+            for (let j = input.length - 1; j > i; j--) {
+                if (input[j] < input[j - 1])
+                    [input[j], input[j - 1]] = [input[j - 1], input[j]]
+            }
+        }
+        console.log(input);
+
+        //快速排序
+        function quickSort(_arr) {
+
+            function partition(arr, left, right) {
+                let pivot = left;
+                let pVal = arr[left];
+                let sIndex = left + 1;
+                for (let i = sIndex; i <= right; i++) {
+                    if (arr[i] < pVal) {
+                        [arr[sIndex], arr[i]] = [arr[i], arr[sIndex]];
+                        sIndex++;
+                    }
+                }
+                [arr[sIndex - 1], arr[pivot]] = [arr[pivot], arr[sIndex - 1]]
+                return sIndex - 1;
+            }
+
+            function sort(arr, left, right) {
+                if (left < right) {
+                    let partitionIndex = partition(arr, left, right);
+                    sort(arr, left, partitionIndex - 1);
+                    sort(arr, partitionIndex + 1, right);
+                }
+                return arr;
+            }
+
+            return sort(_arr, 0, _arr.length - 1)
+        }
+
+        //合并排序
+        function mergeSort(_arr) {
+
+            function merge(left, right) {
+                let res = [];
+                while (left.length && right.length) {
+                    if (left[0] < right[0])
+                        res.push(left.shift())
+                    else
+                        res.push(right.shift())
+                }
+                res = res.concat(left, right);
+                return res;
+            }
+            function sort(arr) {
+
+                if (arr.length < 2)
+                    return arr;
+
+                let mid = Math.floor(arr.length / 2);
+
+                let left = arr.slice(0, mid);
+                let right = arr.slice(mid);
+
+                return merge(sort(left), sort(right));
+            }
+
+            return sort(_arr)
+        }
+
+        console.log(mergeSort([3, 1, 5, 7, 2, 8]));
+    </script>
+</body>
+
+</html>

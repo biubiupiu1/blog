@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .foo {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="test" class="foo" style="color: blue;">11</div>
+    <div id="test1" class="bar" style="color: blue;">11</div>
+    <script>
+        let dom = document.getElementById("test");
+        console.log(dom.getAttributeNames());
+        console.log(dom.getAttribute("class"))
+        console.log(dom.attributes)
+        console.log(dom.getAttributeNode("class"))
+        /*
+            HTMLElement.style 属性返回一个 CSSStyleDeclaration 对象，
+            表示元素的 内联style 属性（attribute），但忽略任何样式表应用的属性。 
+            通过 style 可以访问的 CSS 属性列表，可以查看 CSS Properties Reference。
+        */
+        console.log(dom.style.background)
+        let style = getComputedStyle(dom);
+        console.log(style.color)
+        dom.style.color = "#000"
+        console.log(style.color)
+        //type error
+        //style.color = "rgb(255, 0, 0)"
+
+        //实现一element.getElementsByClassName
+        function getElementsByClassName(classNames, doc = document) {
+            classNames = classNames.split(" ");
+            let allDom = doc.getElementsByTagName("*");
+            let res = [];
+            if (!doc)
+                return res;
+            for (let item of allDom) {
+                let arr = item.className.split(" ");
+                for (let cur of classNames) {
+                    if (arr.findIndex(ele => ele === cur) !== -1) {
+                        res.push(item);
+                        continue;
+                    }
+                }
+            }
+            return res;
+        }
+
+        console.log(getElementsByClassName("foo bar", document.body))
+
+        window.addEventListener("load", function () {
+            console.log("load")
+        })
+
+    </script>
+</body>
+
+</html>
