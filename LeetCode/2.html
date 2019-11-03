@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function maxArea(height) {
+            let l = 0;
+            let h = height.length - 1;
+            let max = 0;
+
+            while (l < h) {
+                let ly = height[l];
+                let hy = height[h];
+                max = Math.max(Math.min(ly, hy) * (h - l), max);
+                if (ly < hy) {
+                    l++;
+                } else {
+                    h--;
+                }
+            }
+            return max;
+        }
+
+        console.log(maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]))
+
+        /**
+        * @param {number} num
+        * @return {string}
+        */
+        var intToRoman = function (num) {
+
+            let str = "";
+            let pop = num;
+
+            let arr = ["I", "V", "X", "L", "C", "D", "M"];
+            let sub = 1000;
+            let i = 6;
+
+            while (i >= 0) {
+                let t = parseInt(pop / sub);
+                pop = pop % sub;
+                str += new Array(t).fill(arr[i]).join("");
+                let temp = 0;
+                if (sub >= 500) {
+                    temp = 100
+                } else if (sub >= 50) {
+                    temp = 10
+                } else if (sub >= 5) {
+                    temp = 1
+                }
+                if (pop >= sub - temp) {
+                    str += arr[i % 2 ? i - 1 : i - 2] + arr[i];
+                    pop -= sub - temp;
+                }
+                sub = i % 2 ? sub / 5 : sub / 2;
+                i--;
+            }
+            return str;
+        };
+
+        console.log(intToRoman(1994))
+
+
+        /**
+        * @param {string} s
+        * @return {number}
+        */
+        var romanToInt = function (s) {
+            let len = s.length;
+            let test = {
+                "I": 1,
+                "V": 5,
+                "X": 10,
+                "L": 50,
+                "C": 100,
+                "D": 500,
+                "M": 1000,
+            }
+            let num = 0;
+            for (let i = 0; i < len;) {
+                if (test[s[i]] >= (test[s[i + 1]] || 0)) {
+                    num += test[s[i]]
+                    i++;
+                } else {
+                    num += test[s[i + 1]] - test[s[i]];
+                    i += 2;
+                }
+            }
+            return num;
+        };
+
+        console.log(romanToInt("MCMXCIV"))
+
+        var longestCommonPrefix = function (strs) {
+            if (strs.length === 0)
+                return ""
+            let minLen = Math.min(...strs.map(item => item.length));
+            let str = "";
+            for (let i = 0; i < minLen; i++) {
+                let s = strs[0][i];
+                let flag = strs.every(item => item[i] === s);
+                if (flag)
+                    str += s;
+                else
+                    break;
+            }
+            return str;
+        };
+
+        console.log(longestCommonPrefix(["11ower", "flow", "flight"]))
+
+        /**
+        * 最接近的三数之和
+        * @param {number[]} nums
+        * @param {number} target
+        * @return {number}
+        */
+        var threeSumClosest = function (nums, target) {
+            nums = nums.sort((a, b) => a - b);
+            let minTarget = nums[0] + nums[1] + nums[2];
+            for (let i = 0; i < nums.length - 2; i++) {
+                let l = i + 1;
+                let h = nums.length - 1;
+                while (l < h) {
+                    let total = nums[i] + nums[l] + nums[h]
+                    let sub = target - total
+                    if (sub === 0)
+                        return target
+                    if (Math.abs(sub) < Math.abs(target - minTarget)) {
+                        minTarget = total
+                    }
+                    if (sub > 0)
+                        l++;
+                    else
+                        h--;
+                }
+            }
+            return minTarget
+        };
+
+        console.log(threeSumClosest([1, 1, 1, 0], -100))
+
+        /**
+        *给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+        给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+         * @param {string} digits
+         * @return {string[]}
+         */
+        var letterCombinations = function (digits) {
+            let arr = getChar(digits[digits.length - 1]).split("");
+            console.log(arr);
+            for (let i = digits.length - 2; i >= 0; i--) {
+                let cs = getChar(digits[i]);
+                let temp = [];
+                for (let j = 0; j < cs.length; j++) {
+                    temp.push(...arr.map(item => cs[j] + item))
+                }
+                arr = temp;
+            }
+
+            function getChar(number) {
+                return "####abc#def#ghi#jkl#mno#pqrstuv#wxyz".slice((+number - 1) * 4, +number * 4).replace("#", "")
+            }
+
+            return arr;
+        };
+
+        console.log(letterCombinations("9"))
+
+        /**
+         * Definition for singly-linked list.
+         * 给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+         * function ListNode(val) {
+         *     this.val = val;
+         *     this.next = null;
+         * }
+         */
+        /**
+         * @param {ListNode} head
+         * @param {number} n
+         * @return {ListNode}
+         */
+
+        function ListNode(val) {
+            this.val = val;
+            this.next = null;
+        }
+
+        var removeNthFromEnd = function (head, n) {
+
+            if (!n)
+                return head;
+
+            let yaNode = new ListNode();
+            yaNode.next = head;
+
+            let arr = [];
+            let cur = yaNode;
+            while (cur) {
+                arr.push(cur);
+                cur = cur.next;
+            }
+
+            let node = arr[arr.length - n];
+            node.next = node.next.next;
+
+            return yaNode.next;
+        };
+
+        var removeNthFromEnd2 = function (head, n) {
+
+            let yaNode = new ListNode();
+            yaNode.next = head;
+
+            let one = yaNode;
+            let two = yaNode;
+            for (let i = 0; i <= n; i++) {
+                two = two.next;
+            }
+
+            while (two) {
+                one = one.next;
+                two = two.next;
+            }
+
+            one.next = one.next.next;
+
+            return yaNode.next;
+        };
+
+        /**
+        *   输入: "()"
+        *   输出: true
+        * @param {string} s
+        * @return {boolean}
+        */
+        var isValid = function (s) {
+
+            let stack = [];
+
+            let obj = {
+                "}": "{",
+                "]": "[",
+                ")": "("
+            }
+
+            for (let i = 0; i < s.length; i++) {
+                let item = s[i];
+                if (obj.hasOwnProperty(item)) {
+                    if (stack.pop() !== obj[item])
+                        return false;
+                } else {
+                    stack.push(item);
+                }
+
+            }
+
+            return !stack.length
+        };
+
+        console.log(isValid(""))
+
+
+        /**
+         * Definition for singly-linked list.
+         * function ListNode(val) {
+         *     this.val = val;
+         *     this.next = null;
+         * }
+         * 合并有序列表
+         * 能用递归实现吗？
+         */
+
+        /**
+         * @param {ListNode} l1
+         * @param {ListNode} l2
+         * @return {ListNode}
+         */
+        var mergeTwoLists = function (l1, l2) {
+
+            let head = new ListNode();
+            let node = head;
+
+            while (l1 && l2) {
+                if (l1.val > l2.val) {
+                    node.next = l2;
+                    l2 = l2.next;
+                } else {
+                    node.next = l1;
+                    l1 = l1.next;
+                }
+                node = node.next;
+            }
+            if (l1) {
+                node.next = l1
+            }
+            if (l2) {
+                node.next = l2;
+            }
+
+            return head.next;
+        };
+
+
+        /**
+        * 给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
+        * @param {number} n
+        * @return {string[]}
+        */
+        var generateParenthesis = function (n) {
+
+            let arr = [];
+
+            function loop(str, open, close) {
+                if (str.length === n * 2)
+                    return arr.push(str);
+                if (open < n) {
+                    loop(str + "(", open + 1, close)
+                }
+                if (close < open) {
+                    loop(str + ")", open, close + 1)
+                }
+            }
+            loop("", 0, 0);
+            return arr;
+        };
+
+        console.log(generateParenthesis(3))
+
+
+        /**
+        * 动态规划版本
+        * @param {number} n
+        * @return {string[]}
+        */
+        var generateParenthesis2 = function (n) {
+
+            let dp = new Array(n + 1);
+
+            dp[0] = [""];
+            dp[1] = ["()"];
+
+            for (let i = 2; i <= n; i++) {
+                dp[i] = [];
+                for (let j = 0; j < i; j++) {
+                    let p = j, q = i - 1 - j;
+                    dp[p].forEach(element => {
+                        dp[q].forEach(item => {
+                            dp[i].push(`(${element})${item}`)
+                        })
+                    });
+                }
+            }
+            return dp[n];
+        };
+        console.log(generateParenthesis2(3))
+
+        /**
+        合并 k 个排序链表，返回合并后的排序链表。请分析和描述算法的复杂度。
+        * Definition for singly-linked list.
+        * function ListNode(val) {
+        *     this.val = val;
+        *     this.next = null;
+        * }
+        */
+        /**
+        * @param {ListNode[]} lists
+        * @return {ListNode}
+        */
+
+        var mergeKLists = function (lists) {
+
+            if (!lists || !lists.length)
+                return null;
+
+            let left = 0;
+            let right = lists.length - 1;
+            return merge(left, right)
+
+            function merge(left, right) {
+                if (left === right)
+                    return lists[left];
+                let mid = left + parseInt((right - left) / 2);
+                let L1 = merge(left, mid);
+                let L2 = merge(mid + 1, right);
+                return mergeTwoLists(L1, L2);
+            }
+
+            function mergeTwoLists(l1, l2) {
+                let head = new ListNode();
+                let node = head;
+                while (l1 && l2) {
+                    if (l1.val > l2.val) {
+                        node.next = l2;
+                        l2 = l2.next;
+                    } else {
+                        node.next = l1;
+                        l1 = l1.next;
+                    }
+                    node = node.next;
+                }
+                if (l1) {
+                    node.next = l1
+                }
+                if (l2) {
+                    node.next = l2;
+                }
+                return head.next;
+            };
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let set = new Set([1, 2]);
+        console.log(set)
+        let map = new Map([[1, 2], [3, 4]]);
+        console.log(...map)
+
+        console.log(...set.values())
+        console.log(...set)
+        console.log(set[Symbol.iterator] === set.values)
+
+        console.log(...map.entries())
+        console.log(...map)
+    </script>
+</body>
+
+</html>
