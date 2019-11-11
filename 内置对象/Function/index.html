@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let fun = new Function("a", "b", "return a + b");
+
+        console.log(fun(1, 2));
+
+        let fun1 = function () {
+            console.log(fun1.caller)
+        }
+
+        let fun2 = function () {
+            fun1();
+        }
+
+        fun2();
+
+
+        function f(n) { console.log(f.caller && f.caller.name); g(n - 1) }
+        function g(n) { if (n > 0) f(n); else stop() }
+        f(2)
+        console.log(f.caller)
+
+        // function stop() {
+        //     var f = stop;
+        //     var stack = "调用栈:";
+        //     // while (f) {
+        //     //     stack += "+" + f.name;
+        //     //     f = f.caller;
+        //     // }
+        // }
+
+    </script>
+</body>
+
+</html>

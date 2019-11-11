@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * Definition for singly-linked list.
+         * function ListNode(val) {
+         *     this.val = val;
+         *     this.next = null;
+         * }
+         */
+        /**
+         * @param {ListNode} head
+         * @return {ListNode}
+         */
+        var swapPairs = function (head) {
+            let resHead = head;
+            let O = new ListNode();
+            O.next = head;
+            let node = O;
+
+            if (node.next && node.next.next) {
+                resHead = node.next.next;
+            }
+
+            while (node.next && node.next.next) {
+                let next1 = node.next;
+                let next2 = next1.next;
+                let next3 = next2.next;
+                next1.next = next3;
+                next2.next = next1;
+                node.next = next2;
+                node = next2;
+            }
+
+            return resHead;
+        };
+
+        var swapPairs2 = function (head) {
+            let node = head;
+
+            if (!head || !head.next) {
+                return head;
+            }
+
+            let next = head.next;
+            head.next = swapPairs2(next.next)
+            next.next = head;
+            return next;
+        };
+
+
+        var reverseKGroup = function (head, k) {
+            let O = new ListNode()
+            O.next = head;
+            let preNode = O;
+            let firNode = head;
+            while (1) {
+                let num = k;
+                let curNode = firNode;
+                while (num > 1 && curNode) {
+                    curNode = curNode.next;
+                    num--;
+                }
+                if (curNode) {
+                    let curNext = curNode.next;
+                    curNode.next = null;
+                    let rNode = reverse(firNode);
+                    preNode.next = curNode;
+                    preNode = rNode;
+                    firNode = curNext;
+                } else {
+                    preNode.next = firNode;
+                    break;
+                }
+            }
+
+            return O.next;
+
+            function reverse(node) {
+                if (node && node.next) {
+                    let pre = reverse(node.next)
+                    pre.next = node;
+                    return node;
+                }
+                else
+                    return node;
+            }
+        };
+
+        /**
+         * @param {number[]} nums
+         * @return {number}
+         */
+        var removeDuplicates = function (nums) {
+            let index = 0;
+            for (let i = 1; i < nums.length; i++) {
+                if (nums[i] !== nums[index]) {
+                    nums[++index] = nums[i];
+                }
+            }
+            return nums;
+        };
+
+        console.log(removeDuplicates([1, 1, 2]))
+
+
+        /**
+         * kmp 算法
+         * @param {string} haystack
+         * @param {string} needle
+         * @return {number}
+         参考 https://juejin.im/post/5ae91531f265da0b7964ad8c
+         重点是next数组的推导，需要重点理解
+         */
+        var strStr = function (haystack, needle) {
+
+            if (needle === "")
+                return 0;
+
+            let next = getNext(needle);
+            let i, j;
+            for (i = 0; i < haystack.length;) {
+                for (j = 0; j < needle.length; j++) {
+                    if (haystack[i + j] !== needle[j]) {
+                        add = j - next[j];
+                        break;
+                    }
+                }
+                if (j === needle.length) {
+                    return i;
+                }
+                i += add;
+            }
+            return -1;
+
+            function getNext(str) {
+                let len = str.length;
+                let i = 0;
+                let j = -1;
+                let next = new Array(len)
+                next[0] = -1;
+                while (i < len - 1) {
+                    if (j === -1 || str[i] === str[j]) {
+                        next[++i] = ++j;
+                    } else {
+                        j = next[j]
+                    }
+                }
+                return next;
+            }
+        };
+
+        console.log(strStr("aaaaa", "bba"))
+
+    </script>
+</body>
+
+</html>

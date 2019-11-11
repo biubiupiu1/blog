@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+        29题（这里有问题，可以改为负数求解，因为正数转负数会出现-2^31 变成 2^31次方，这样就溢出了）
+        给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
+        返回被除数 dividend 除以除数 divisor 得到的商。
+         * @param {number} dividend
+         * @param {number} divisor
+         * @return {number}
+         */
+        var divide = function (dividend, divisor) {
+
+            let count = 0;
+
+            let flag = (dividend >= 0 && divisor >= 0) || (dividend < 0 && divisor < 0);
+
+            dividend = Math.abs(dividend);
+            divisor = Math.abs(divisor);
+
+            let tempDivsor = divisor;
+
+            if (dividend === divisor)
+                return flag ? 1 : -1
+
+            while (tempDivsor <= dividend) {
+                let tempCount = 1;
+                while (tempDivsor > 0 && tempDivsor <= dividend) {
+                    dividend -= tempDivsor;
+                    count += tempCount;
+                    tempDivsor <<= 1;
+                    tempCount <<= 1;
+                }
+                tempDivsor = divisor;
+            }
+
+            let res = flag ? count : 0 - count;
+            res = res > Math.pow(2, 31) - 1 ? Math.pow(2, 31) - 1 : res;
+
+            return res;
+        };
+
+        console.log(divide(-2147483648, -1))
+
+
+        /**
+         * @param {string} s
+         * @param {string[]} words
+         * @return {number[]}
+         */
+        var findSubstring = function (s, words) {
+
+            if (!words.length)
+                return [];
+
+            let oMap = {};
+            words.forEach(item => oMap[item] = (oMap[item] ? oMap[item] + 1 : 1));
+
+            let iLen = words[0].length;
+            let strLen = words.length * iLen
+
+            let res = [];
+
+            for (let i = 0; i <= s.length - strLen; i++) {
+                let subStr = s.slice(i, i + strLen);
+                let tMap = {};
+                let j = 0;
+                for (; j <= strLen - iLen; j += iLen) {
+                    let str = subStr.slice(j, j + iLen);
+                    if (oMap[str]) {
+                        tMap[str] = tMap[str] ? tMap[str] + 1 : 1
+                    } else {
+                        break;
+                    }
+                    if (tMap[str] > oMap[str])
+                        break
+                }
+                if (j > strLen - iLen) {
+                    res.push(i);
+                }
+            }
+
+            return res;
+        };
+
+        console.log(findSubstring("wordgoodgoodgoodbestword", ["word", "good", "best", "good"]))
+
+
+        /**
+         * @param {number[]} nums
+         * @return {void} Do not return anything, modify nums in-place instead.
+         */
+        var nextPermutation = function (nums) {
+            let i = nums.length - 1;
+            let minIndex = i;
+            for (; i > 0; i--) {
+                min = Math.min(nums[i], nums[minIndex]);
+                if (nums[minIndex] > nums[i - 1]) {
+                    let temp = nums[minIndex]
+                    nums[minIndex] = nums[i - 1];
+                    nums[i - 1] = temp;
+                    break;
+                }
+            }
+            if (i === 0) {
+                nums.reverse();
+            }
+        };
+        let arr = [1, 3, 2]
+        nextPermutation(arr)
+        console.log(arr);      
+    </script>
+</body>
+
+</html>

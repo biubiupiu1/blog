@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Symbol</title>
+</head>
+
+<body>
+    <script>
+        let obj = {};
+        let a = Symbol.for("a");
+        obj[a] = "1";
+        console.log(Object.getOwnPropertySymbols(obj));
+        console.log(Symbol.for("a") === a);
+
+        let key = Symbol.keyFor(a);
+        console.log(key)
+
+        let mpSymbol = Symbol("b");
+        console.log(Symbol.for("b") === mpSymbol);
+        console.log(Symbol.keyFor(mpSymbol))
+
+        console.log(Symbol.iterator)
+
+        console.log(mpSymbol.description)
+        
+        var obj1 = {};
+
+        obj1[Symbol("a")] = "a";
+        obj1[Symbol.for("b")] = "b";
+        obj1["c"] = "c";
+        obj1.d = "d";
+
+        for (var i in obj1) {
+            console.log(i); // logs "c" and "d"
+        }
+
+        console.log(Object.getOwnPropertySymbols(obj1))
+
+        console.log(Reflect.ownKeys(obj1))
+    </script>
+</body>
+
+</html>

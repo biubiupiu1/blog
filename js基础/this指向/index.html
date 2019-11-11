@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+
+    <ul style="width: 500px;height: 500px;" onclick="inline.apply(this)" id="button">
+        <li>111</li>
+        <li>222</li>
+        <li>333</li>
+    </ul>
+
+    <script>
+
+        function inline(ev) {
+            console.log(this);
+            console.log("inline")
+        }
+
+        document.getElementById("button").onclick = function (ev) {
+            console.log(this);
+            console.log(ev.currentTarget, ev.target);
+            console.log("onclick")
+        }
+
+        function foo() {
+            console.log(this)
+        }
+        foo.apply(undefined);
+
+        var student = {
+            name: '若川',
+            doSth: function () {
+                console.log(this.name);
+                return () => {
+                    console.log('arrowFn:', this.name);
+                }
+            }
+        }
+        var person = {
+            name: 'person',
+        }
+        student.doSth().call(person); // '若川'  'arrowFn:' '若川'
+        student.doSth.call(person)(); // 'person' 'arrowFn:' 'person'
+
+    </script>
+</body>
+
+</html>

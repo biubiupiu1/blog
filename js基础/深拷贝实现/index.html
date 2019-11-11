@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>深拷贝实现</title>
+</head>
+
+<body>
+    <script>
+        (function () {
+            /* 基础版本 */
+            function clone(target, map = new WeakMap()) {
+                if (typeof target === 'object' && typeof target !== 'null') {
+                    let cloneTarget = Array.isArray(target) ? [] : {};
+                    if (map.has(target)) {
+                        return map.get(target);
+                    }
+                    map.set(target, cloneTarget);
+                    for (const key in target) {
+                        cloneTarget[key] = clone(target[key], map);
+                    }
+                    return cloneTarget;
+                } else {
+                    return target;
+                }
+            };
+
+            let a = { val: 2 }
+            a.obj = a;
+            let b = clone(a);
+            console.log(b.obj === a.obj);
+        })();
+
+        (function () {
+            /* 考虑Map Set版本 */
+
+            function isObject(target) {
+                return (typeof target === 'object' && typeof target !== 'null') || typeof target === "function";
+            }
+
+            function forEach(target, handle) {
+                let flag = Array.isArray(target);
+                let indexs = flag ? target : Object.keys(target);
+                let len = indexs.length;
+                for (let i = 0; i < len; i++) {
+                    handle(flag ? target[i] : target[indexs[i]], flag ? i : indexs[i])
+                }
+            };
+
+            function getInit(target) {
+                return new target.constructor();
+            }
+
+            function getType(target) {
+                return Object.prototype.toString.apply(target)
+            }
+
+            const mapTag = '[object Map]';
+            const setTag = '[object Set]';
+            const arrayTag = '[object Array]';
+            const objectTag = '[object Object]';
+
+            const deepTag = [mapTag, setTag, arrayTag, objectTag]
+
+            function clone(target, map = new WeakMap()) {
+
+                if (!isObject(target))
+                    return target;
+
+                if (map.has(target)) {
+                    return map.get(target);
+                }
+
+                let type = getType(target);
+
+                let cloneTarget;
+
+                if (deepTag.includes(type)) {
+                    cloneTarget = getInit(target);
+                }
+
+                map.set(target, cloneTarget);
+
+                if (type === setTag) {
+                    target.forEach(item => {
+                        cloneTarget.add(clone(item, map));
+                    })
+                    return cloneTarget;
+                }
+
+                if (type === mapTag) {
+                    target.forEach((item, index) => {
+                        cloneTarget.set(index, clone(item, map));
+                    })
+                    return cloneTarget;
+                }
+
+                forEach(target, (val, index) => {
+                    cloneTarget[index] = clone(val, map);
+                })
+                return cloneTarget;
+
+            };
+
+            let a = { s: new Set([1, 2, 3]), m: new Map([[1, 'one'], [2, 'two']]) }
+            let b = clone(a);
+            console.log(b.s === a.s);
+        })();
+
+
+        (function () {
+            /* 比较完整 版本 */
+
+            function isObject(target) {
+                return (typeof target === 'object' && typeof target !== 'null') || typeof target === "function";
+            }
+
+            function forEach(target, handle) {
+                let flag = Array.isArray(target);
+                let indexs = flag ? target : Object.keys(target);
+                let len = indexs.length;
+                for (let i = 0; i < len; i++) {
+                    handle(flag ? target[i] : target[indexs[i]], flag ? i : indexs[i])
+                }
+            };
+
+            function getInit(target) {
+                return new target.constructor();
+            }
+
+            function getType(target) {
+                return Object.prototype.toString.apply(target)
+            }
+            const mapTag = '[object Map]';
+            const setTag = '[object Set]';
+            const arrayTag = '[object Array]';
+            const objectTag = '[object Object]';
+            const argsTag = '[object Arguments]';
+
+            const boolTag = '[object Boolean]';
+            const dateTag = '[object Date]';
+            const numberTag = '[object Number]';
+            const stringTag = '[object String]';
+            const symbolTag = '[object Symbol]';
+            const errorTag = '[object Error]';
+            const regexpTag = '[object RegExp]';
+            const funcTag = '[object Function]';
+
+            const deepTag = [mapTag, setTag, arrayTag, objectTag, argsTag]
+
+            function cloneOther(target) {
+
+                let constructor = target.constructor;
+
+                switch (type) {
+                    case boolTag:
+                    case dateTag:
+                    case numberTag:
+                    case stringTag:
+                    case errorTag:
+                        return new constructor(target)
+                        break;
+                    case regexpTag:
+                        return cloneReg(target)
+                        break;
+                    case funcTag:
+                        return funcTag(target)
+                        break;
+                    case symbolTag:
+                        return cloneSymbol(target)
+                        break;
+                }
+            }
+
+            function cloneSymbol(targe) {
+                return Object(Symbol.prototype.valueOf.call(targe));
+            }
+
+            function cloneReg(targe) {
+                const reFlags = /\w*$/;
+                const result = new targe.constructor(targe.source, reFlags.exec(targe));
+                result.lastIndex = targe.lastIndex;
+                return result;
+            }
+
+            function cloneFunction(func) {
+                const bodyReg = /(?<={)(.|\n)+(?=})/m;
+                const paramReg = /(?<=\().+(?=\)\s+{)/;
+                const funcString = func.toString();
+                if (func.prototype) {
+                    const param = paramReg.exec(funcString);
+                    const body = bodyReg.exec(funcString);
+                    if (body) {
+                        if (param) {
+                            const paramArr = param[0].split(',');
+                            return new Function(...paramArr, body[0]);
+                        } else {
+                            return new Function(body[0]);
+                        }
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return eval(funcString);
+                }
+            }
+
+            function clone(target, map = new WeakMap()) {
+
+                if (!isObject(target))
+                    return target;
+
+                if (map.has(target)) {
+                    return map.get(target);
+                }
+
+                let type = getType(target);
+
+                let cloneTarget;
+
+                if (deepTag.includes(type)) {
+                    cloneTarget = getInit(target);
+                } else {
+                    return cloneOther(target);
+                }
+
+                map.set(target, cloneTarget);
+
+                if (type === setTag) {
+                    target.forEach(item => {
+                        cloneTarget.add(clone(item, map));
+                    })
+                    return cloneTarget;
+                }
+
+                if (type === mapTag) {
+                    target.forEach((item, index) => {
+                        cloneTarget.set(index, clone(item, map));
+                    })
+                    return cloneTarget;
+                }
+
+                forEach(target, (val, index) => {
+                    cloneTarget[index] = clone(val, map);
+                })
+                return cloneTarget;
+
+            };
+
+            let a = { s: new Set([1, 2, 3]), m: new Map([[1, 'one'], [2, 'two']]) }
+            let b = clone(a);
+            console.log(b.s === a.s);
+        })();
+
+
+    </script>
+</body>
+
+</html>
