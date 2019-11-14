@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+
+    <p>hello ServiceWorker</p>
+
+    <img src="./taoci.png" alt="">
+
+    <script>
+        if ('serviceWorker' in window.navigator) {
+            navigator.serviceWorker.register('./sw.js', { scope: './' })
+                .then(function (reg) {
+                    console.log('success', reg);
+                })
+                .catch(function (err) {
+                    console.log('fail', err);
+                });
+        }
+    </script>
+
+    <script src="./setTimeout.js"></script>
+</body>
+
+</html>
