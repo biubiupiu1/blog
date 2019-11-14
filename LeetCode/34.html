@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /**
+         * @param {number[]} nums
+         * @param {number} target
+         * @return {number[]}
+         */
+        var searchRange = function (nums, target) {
+            let len = nums.length;
+            let left = 0;
+            let right = len - 1;
+
+            while (left <= right) {
+                let mid = Math.floor((left + right) / 2);
+                if (nums[mid] === target) {
+                    let i = 1;
+                    let l = mid;
+                    let h = mid;
+                    while (nums[mid - i] === target || nums[mid + i] === target) {
+                        if (nums[mid - i] === target)
+                            l = mid - i;
+                        if (nums[mid + i] === target)
+                            h = mid + i;
+                        i++;
+                    }
+                    return [l, h];
+                } else if (nums[mid] < target) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+
+            return [-1, -1]
+        };
+
+        console.log(searchRange([5, 7, 7, 8, 8, 10], 8))
+
+
+        /**
+         * @param {number[]} nums
+         * @param {number} target
+         * @return {number}
+         */
+        var searchInsert = function (nums, target) {
+
+            let len = nums.length;
+
+            let left = 0;
+            let right = len - 1;
+
+            while (left <= right) {
+                let mid = Math.floor((left + right) / 2);
+                if (nums[mid] === target) {
+                    return mid;
+                } else if (nums[mid] > target) {
+                    right = mid - 1;
+                } else {
+                    left = left + 1;
+                }
+            }
+            return left;
+        };
+
+        console.log(searchInsert([1, 3, 5, 6], 5))
+
+        /**
+         * @param {number} x
+         * @param {number} n
+         * @return {number}
+         */
+
+        var myPow = function (x, n) {
+
+            if (n < 0) {
+                x = 1 / x;
+                n = -n;
+            }
+
+            if (n === 0)
+                return 1;
+
+            if (n === 1)
+                return x;
+
+            if (n % 2) {
+                let num = myPow(x, n >> 1);
+                let res = num * num * x;
+                return res === Infinity ? 0 : res;
+            } else {
+                let num = myPow(x, n >> 1);
+                let res = num * num;
+                return res === Infinity ? 0 : res;
+            }
+        };
+
+        console.log(myPow(2, -2147483648))
+    </script>
+</body>
+
+</html>
