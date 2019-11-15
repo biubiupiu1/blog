@@ -2,6 +2,8 @@ const CompressionPlugin = require('compression-webpack-plugin')
 const IS_PROD = process.env.NODE_ENV === 'production'
 const cdnDomian = 'http://dev.biubiupiu.cn'
 
+console.log(process.env.VUE_APP_TESTURL)
+
 module.exports = {
     publicPath: IS_PROD ? cdnDomian : '/',
     chainWebpack: config => {
