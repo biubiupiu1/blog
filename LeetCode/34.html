@@ -105,6 +105,72 @@
         };
 
         console.log(myPow(2, -2147483648))
+
+        /**
+         * @param {number} x
+         * @return {number}
+         */
+        var mySqrt = function (x) {
+            let left = 0;
+            let right = x;
+
+            if (x === 1)
+                return x;
+
+            while (left + 1 < right) {
+                let mid = (left + right) >> 1;
+                if (mid * mid <= x) {
+                    left = mid;
+                } else {
+                    right = mid;
+                }
+            }
+
+            return left
+        };
+
+        console.log(mySqrt(1))
+
+        /**
+         * @param {number[][]} matrix
+         * @param {number} target
+         * @return {boolean}
+         */
+        var searchMatrix = function (matrix, target) {
+
+            let left = 0;
+            let right = matrix.length - 1;
+
+            while (left <= right) {
+                let mid = (left + right) >> 1;
+                if (matrix[mid][0] === target) {
+                    return true
+                } else if (matrix[mid][0] > target) {
+                    right = mid - 1;
+                } else {
+                    left = midb + 1;
+                }
+            }
+
+            if (right < 0)
+                return false;
+
+            let l = 0;
+            let r = matrix[0].length - 1;
+
+            while (l <= r) {
+                let mid = (l + r) >> 1;
+                if (matrix[right][mid] === target) {
+                    return true
+                } else if (matrix[right][mid] > target) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            }
+
+            return false
+        };
     </script>
 </body>
 
