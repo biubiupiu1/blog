@@ -1,0 +1,215 @@
+<body>
+</body>
+
+<script>
+    /**
+     * @param {number[]} candidates
+     * @param {number} target
+     * @return {number[][]}
+     给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+    candidates 中的数字可以无限制重复被选取。
+
+    说明：
+
+    所有数字（包括 target）都是正整数。
+    解集不能包含重复的组合。 
+
+
+    思路，回溯剪枝
+
+    递归主要是要想核心功能，每一个功能都是一样的就是返回一个结果数组
+     */
+    var combinationSum = function (candidates, target, index = 0) {
+
+        candidates = candidates.sort((a, b) => a - b);
+
+        function loop(candidates, target, index = 0) {
+            let len = candidates.length;
+
+            let res = [];
+
+            for (let i = index; i < len; i++) {
+                if (candidates[i] === target) {
+                    res.push([candidates[i]]);
+                    break;
+                } else if (candidates[i] > target) {
+                    break;
+                } else {
+                    let test = loop(candidates, target - candidates[i], i);
+                    test = test.map(item => [candidates[i]].concat(item));
+                    res = res.concat(test);
+                }
+            }
+            return res;
+        }
+        return loop(candidates, target);
+    };
+
+    console.log(combinationSum([2, 3, 6, 7], 7))
+
+    /* 这里会重复 */
+    var _combinationSum = function (candidates, target, index = 0) {
+
+        candidates = candidates.sort((a, b) => a - b);
+        let len = candidates.length;
+
+        let arr = new Array(target + 1);
+        for (let i = 1; i <= target; i++) {
+            let res = [];
+            let hash = {};
+            for (let j = 0; j < len; j++) {
+                if (candidates[j] > i) {
+                    break;
+                }
+                let sub = i - candidates[j];
+                if (sub === 0) {
+                    res.push([i]);
+                } else {
+                    if (hash[candidates[j]]) {
+                        continue
+                    }
+                    let temp = arr[sub];
+                    hash[sub] = 1;
+                    temp = temp.map(item => item.concat(candidates[j]));
+                    if (temp.length) {
+                        res = res.concat(temp)
+                    }
+                }
+            }
+            arr[i] = res;
+        }
+        return arr[target];
+    };
+
+    //console.log(_combinationSum([10, 1, 2, 7, 6, 1, 5], 8))
+
+    /**
+     * @param {number[]} candidates
+     * @param {number} target
+     * @return {number[][]}
+     */
+    var combinationSum2 = function (candidates, target) {
+        candidates = candidates.sort((a, b) => a - b);
+
+        function loop(candidates, target, index = 0) {
+            let len = candidates.length;
+
+            let res = [];
+
+            for (let i = index; i < len; i++) {
+                if (candidates[i] == candidates[i - 1] && i > index)
+                    continue;
+                if (candidates[i] === target) {
+                    res.push([candidates[i]]);
+                    break;
+                } else if (candidates[i] > target) {
+                    break;
+                } else {
+                    let test = loop(candidates, target - candidates[i], i + 1);
+                    test = test.map(item => [candidates[i]].concat(item));
+                    res = res.concat(test);
+                }
+            }
+            return res;
+        }
+        return loop(candidates, target);
+    };
+
+    console.table(combinationSum2([2, 5, 2, 1, 2], 5));
+
+    /* 给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
+
+    例如，给出 n = 3，生成结果为：
+
+    [
+    "((()))",
+    "(()())",
+    "(())()",
+    "()(())",
+    "()()()"
+    ] */
+
+
+    var generateParenthesis = function (n) {
+
+        let res = []
+
+        function loop(left, right, arr = []) {
+
+            if (right === n) {
+                res.push(arr);
+                return
+            }
+
+            if (left < n) {
+                loop(left + 1, right, [].concat(arr, "("))
+            }
+
+            if (right < left) {
+                loop(left, right + 1, [].concat(arr, ")"))
+            }
+        }
+
+        loop(0, 0)
+
+        return res;
+
+    };
+
+    console.log(generateParenthesis(3))
+    /**
+     * @param {character[][]} board
+     * @return {void} Do not return anything, modify board in-place instead.
+     数独问题
+     */
+    var solveSudoku = function (board) {
+        let rows = new Array(9).fill(1).map(() => { return {} });
+        let cols = new Array(9).fill(1).map(() => { return {} });
+        let boxs = new Array(9).fill(1).map(() => { return {} });
+        let noneArr = [];
+
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 9; j++) {
+                if (board[i][j] !== ".") {
+                    rows[i][board[i][j]] = 1;
+                    cols[j][board[i][j]] = 1;
+                    let boxIndex = Math.floor(i / 3) * 3 + Math.floor(j / 3);
+                    boxs[boxIndex][board[i][j]] = 1;
+                } else {
+                    noneArr.push([i, j]);
+                }
+            }
+        }
+
+        let noneArrLen = noneArr.length;
+
+        function loop(index) {
+            let [x, y] = noneArr[index];
+            let boxIndex = Math.floor(x / 3) * 3 + Math.floor(y / 3);
+            for (let i = 1; i <= 9; i++) {
+                if (!rows[x][i] && !cols[y][i] && !boxs[boxIndex][i]) {
+                    rows[x][i] = 1;
+                    cols[y][i] = 1;
+                    boxs[boxIndex][i] = 1;
+                    board[x][y] = i;
+                    if (index >= noneArrLen - 1) {
+                        return 1;
+                    }
+                    let re = loop(index + 1);
+                    if (re)
+                        return 1;
+                    else {
+                        rows[x][i] = 0;
+                        cols[y][i] = 0;
+                        boxs[boxIndex][i] = 0;
+                    }
+                }
+            }
+        }
+
+        loop(0);
+    };
+
+    console.log(solveSudoku([["5", "3", ".", ".", "7", ".", ".", ".", "."], ["6", ".", ".", "1", "9", "5", ".", ".", "."], [".", "9", "8", ".", ".", ".", ".", "6", "."], ["8", ".", ".", ".", "6", ".", ".", ".", "3"], ["4", ".", ".", "8", ".", "3", ".", ".", "1"], ["7", ".", ".", ".", "2", ".", ".", ".", "6"], [".", "6", ".", ".", ".", ".", "2", "8", "."], [".", ".", ".", "4", "1", "9", ".", ".", "5"], [".", ".", ".", ".", "8", ".", ".", "7", "9"]]))
+</script>
