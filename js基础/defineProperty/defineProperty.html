@@ -1,37 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>defineProperty</title>
+    <meta charset="UTF-8">
+    <title>defineProperty</title>
 </head>
+
 <body>
-<script>
-    let obj = {};
+    <script>
+        let obj = {};
 
-    let desc = function () {
-    };
+        let desc = function () {
+        };
 
-    desc.prototype.writable = true;
+        desc.prototype.writable = true;
 
-    let descriptor = new desc();
-    descriptor.get = function () {
-        return "rouse"
-    };
+        let descriptor = new desc();
+        descriptor.get = function () {
+            return "rouse"
+        };
 
-    //Object.defineProperty(obj, "name", descriptor)
+        //Object.defineProperty(obj, "name", descriptor)
 
-    let obj2 = {};
+        let obj2 = {};
 
-    Object.defineProperty(obj2, "name", {
-        configurable: false,
-        writable: true
-    })
-    Object.defineProperty(obj2, "name", {
-        value: "4",
-    })
-    console.log(obj2);
-    obj2.name = ""
-    console.log(obj2);
-</script>
+        Object.defineProperty(obj2, "name", {
+            configurable: false,
+            writable: true
+        })
+        Object.defineProperty(obj2, "name", {
+            value: "4",
+        })
+        console.log(obj2);
+        obj2.name = ""
+        console.log(obj2);
+
+        function wrapArr() {
+            let arr = [];
+            Object.defineProperty(arr, "0", {
+                set(value) {
+                    console.log("set", value);
+                }
+            })
+            return arr;
+        }
+
+        let arr = [];
+
+        arr[0] = "1";
+
+        console.log(arr);
+
+
+    </script>
 </body>
+
 </html>

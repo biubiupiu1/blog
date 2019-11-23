@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= VUE_APP_TESTURL %>favicon.ico">
-    <% if (process.env.NODE_ENV === 'production') { %>
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
       <% for (let css of htmlWebpackPlugin.options.cdn.css) { %>
         <link href="<%=css%>" rel="preload" as="style">
         <link rel="stylesheet" href="<%=css%>" as="style">
@@ -14,7 +13,6 @@
         <link href="<%=js%>" rel="preload" as="script">
         <script src="<%=js%>"></script>
       <% }%>
-    <% } %>
     <title>project</title>
   </head>
   <body>

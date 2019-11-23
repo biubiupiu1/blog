@@ -335,6 +335,9 @@
                 2. p[i -1] == "*"
                     当p[n - 1] == "." or p[n - 1] == s[m]: dp[i][j] = dp[i - 1][j] || dp[i][j - 2] (并上第二种情况为了第一种情况不匹配时回溯)
                     否则dp[i][j] = dp[i][j - 2]   (即此时*号匹配前一个字符零次) 
+
+            aaa
+            ab*a*c*a
         */
 
         var isMatch2 = function (s, p) {
