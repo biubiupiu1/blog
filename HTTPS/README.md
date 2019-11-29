@@ -64,3 +64,11 @@
 
 ![](http://dev.biubiupiu.cn/20191123153132.png)
 
+### 证书链
+
+系统自带一些证书，这些证书一般是顶层证书，
+
+![](http://dev.biubiupiu.cn/20191129001334.png)
+
+
+[知乎比较好的连接](https://zhuanlan.zhihu.com/p/43789231)

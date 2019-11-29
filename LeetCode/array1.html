@@ -1,0 +1,27 @@
+<body>
+</body>
+<script>
+    /**
+     * @param {number[][]} points
+     * @return {number}
+     */
+    var minTimeToVisitAllPoints = function (points) {
+        let total = 0;
+
+        points.reduce((acc, cur) => {
+            let [x1, y1] = acc;
+            let [x2, y2] = cur;
+
+            let x = Math.abs(x2 - x1);
+            let y = Math.abs(y2 - y1);
+
+            let max = Math.max(x, y);
+
+            total += max;
+
+            return cur
+        })
+
+        return total;
+    };
+</script>

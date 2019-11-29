@@ -1,0 +1,62 @@
+<body>
+</body>
+<script>
+    /**
+     * Definition for a binary tree node.
+     * function TreeNode(val) {
+     *     this.val = val;
+     *     this.left = this.right = null;
+     * }
+     */
+    /**
+     * @param {TreeNode} t1
+     * @param {TreeNode} t2
+     * @return {TreeNode}
+     */
+    var mergeTrees = function (t1, t2) {
+        if (!t1 && !t2) {
+            return null;
+        }
+
+        if (!t1) {
+            return t2;
+        }
+
+        if (!t2) {
+            return t1;
+        }
+
+        let newNode = new TreeNode(t1.val + t2.val);
+
+        newNode.left = mergeTrees(t1.left, t2.left);
+        newNode.right = mergeTrees(t2.right, t2.right);
+
+        return newNode;
+    };
+
+    var reverseList = function (head) {
+        if (!head || !head.next)
+            return head;
+
+        let first = null;
+
+        function loop(node) {
+            if (!node || !node.next) {
+                first = node;
+                return node;
+            }
+            let next = loop(node.next);
+
+            node.next = null
+            next.next = node;
+
+            return node
+        }
+
+        loop(head)
+
+        return first
+    };
+
+    reverseList({ val: 1, next: { val: 2, next: { val: 3, next: null } } })
+</script>

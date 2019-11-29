@@ -1,0 +1,93 @@
+<body>
+</body>
+<script>
+    /**
+     * @param {string} word1
+     * @param {string} word2
+     * @return {number}
+    给定两个单词 word1 和 word2，计算出将 word1 转换成 word2 所使用的最少操作数 。
+
+    你可以对一个单词进行如下三种操作：
+
+    插入一个字符
+    删除一个字符
+    替换一个字符
+    ![](http://dev.biubiupiu.cn/20191124231906.png)
+     */
+    var minDistance = function (word1, word2) {
+        let len1 = word1.length;
+        let len2 = word2.length;
+        let dp = new Array(len1 + 1).fill(1).map(() => new Array(len2 + 1));
+        for (let i = 0; i <= len1; i++) {
+            dp[i][0] = i;
+        }
+        for (let i = 0; i <= len2; i++) {
+            dp[0][i] = i;
+        }
+
+        for (let i = 1; i <= len1; i++) {
+            for (let j = 1; j <= len2; j++) {
+                let m = i - 1;
+                let n = j - 1;
+                if (word1[m] === word2[n]) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = Math.min(dp[i - 1][j - 1], dp[i][j - 1], dp[i - 1][j]) + 1;
+                }
+            }
+        }
+        return dp[len1][len2]
+    };
+
+    var minDistance2 = function (word1, word2) {
+        let len1 = word1.length;
+        let len2 = word2.length;
+        let dp = new Array(len1 + 1).fill(1).map(() => new Array(len2 + 1));
+        for (let i = 0; i <= len1; i++) {
+            dp[i][0] = { val: i, pre: [i - 1, 0], action: "del " + dp[i][0] };
+        }
+        for (let i = 0; i <= len2; i++) {
+            dp[0][i] = { val: i, pre: [0, i - 1], action: "add " + dp[0][i] };
+        }
+
+        for (let i = 1; i <= len1; i++) {
+            for (let j = 1; j <= len2; j++) {
+                let m = i - 1;
+                let n = j - 1;
+                if (word1[m] === word2[n]) {
+                    dp[i][j] = { val: dp[i - 1][j - 1].val, pre: [i - 1, j - 1], action: "enter" };;
+                } else {
+                    let rep = dp[i - 1][j - 1].val;
+                    let add = dp[i][j - 1].val;
+                    let del = dp[i - 1][j].val;
+                    if (rep < add) {
+                        if (rep < del) {
+                            dp[i][j] = { val: dp[i - 1][j - 1].val + 1, pre: [i - 1, j - 1], action: "rep " + word1[m] + "->" + word2[n] };
+                        } else {
+                            dp[i][j] = { val: dp[i - 1][j].val + 1, pre: [i - 1, j], action: "del " + word1[m] };
+                        }
+                    } else {
+                        if (add < del) {
+                            dp[i][j] = { val: dp[i][j - 1].val + 1, pre: [i, j - 1], action: "add " + word1[m] };
+                        } else {
+                            dp[i][j] = { val: dp[i - 1][j].val + 1, pre: [i - 1, j], action: "del " + word1[m] };
+                        }
+                    }
+                }
+            }
+        }
+        let res = [];
+        let cur = dp[len1][len2];
+        console.log(dp)
+        console.log(cur);
+        while (!cur.pre.includes(-1)) {
+            let [m, n] = cur.pre;
+            res.unshift(cur.action);
+            cur = dp[m][n];
+        }
+        return res
+    };
+
+    console.log(minDistance2("horse", "ros"), "horse", "ros")
+
+</script>

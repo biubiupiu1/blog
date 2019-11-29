@@ -182,3 +182,22 @@ git cherry-pick
 ```
 
 https://blog.csdn.net/longintchar/article/details/83473594
+
+
+#### git checkout -- [file]
+
+可以让文件回到暂存区的状态或者，回到工作区的状态；也就是回到最近一次`git commit`或`git add`时的状态。
+
+#### git reset HEAD <file>
+
+可以将暂存区的修改撤销掉，重新放回工作区
+
+#### 别名
+
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
+
+修改log日志
+
+git config --global alias.lga "log --color --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --"
+
+查看所有分支的日志
