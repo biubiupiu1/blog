@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="parent">
+        parent
+        <div class="child1">
+            child1
+            <div class="child2">
+                child2
+            </div>
+        </div>
+    </div>
+
+    <input type="text" name="" id="test">
+</body>
+<script>
+    document.querySelector(".child1").addEventListener("click", function () {
+        console.log("冒泡")
+    })
+    document.querySelector(".child1").addEventListener("click", function () {
+        console.log("捕获")
+    }, true)
+
+    console.log(document.getElementById("test").propNmae)
+
+    console.log(document)
+
+    document.addEventListener("click", function(event) {
+        console.log(event)
+        console.log("screenX", event.screenX);
+        console.log("clientX", event.clientX);
+    })
+
+    // var event = new Event('build');
+
+    // // var event = new CustomEvent('build', {
+    // //     //detail: { text: () => textarea.value },
+    // //     bubbles: true,
+    // // });
+
+    // // Listen for the event.
+    // document.addEventListener('build', function (e) {
+    //     console.log(e);
+    // }, false);
+
+    // // Dispatch the event.
+    // document.dispatchEvent(event);
+
+</script>
+
+</html>

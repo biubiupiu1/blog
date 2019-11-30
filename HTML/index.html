@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <input id="input1" type="text" value="test" sth="sth">
+    <input id="input2" type="text">
+    <img src="#" alt="alt信息" title="title信息">
+    <ul>
+        <li>1</li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+
+    <table style="width:100%">
+        <tr>
+            <img src="http://dev.biubiupiu.cn/20191130135135.png" alt="">
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Age</th>
+        </tr>
+        <tr>
+            <td>Jill</td>
+            <td>Smith</td>
+            <td>50</td>
+        </tr>
+        <tr>
+            <td>Eve</td>
+            <td>Jackson</td>
+            <td>94</td>
+        </tr>
+    </table>
+    <script>
+        let uls1 = document.querySelectorAll("ul li");
+        let uls2 = document.getElementsByTagName("li");
+
+        console.log(uls1);
+        console.log(uls2);
+
+        console.log(document.querySelector("ul").childNodes)
+        console.log(document.querySelector("ul").children)
+
+        let input1 = document.getElementById("input1");
+
+        //input1.attributes.value.value = "modifiy"
+        //input1.setAttribute("value", "modifiy")
+
+        input1.value = "modifiy";
+
+        console.dir(input1)
+        console.log(input1.attributes)
+        console.log(input1.attributes.sth.value)
+        console.log(input1.getAttribute("value"))
+
+        console.log(input1.value) //test
+        console.log(input1.id)    //input1
+        console.log(input1.type)   //text
+        console.log(input1.sth)  //sth
+
+        let input2 = document.getElementById("input2");
+        console.dir(input2.value); // ""
+    </script>
+</body>
+
+</html>
