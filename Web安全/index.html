@@ -9,15 +9,31 @@
 </head>
 
 <body>
-    <a href="javascript:alert(1)">XSS</a>
+    <!-- <iframe id="myIFrame" src="http://child.study.com" frameborder="0"></iframe>
+    <a href="javascript:alert(1)">XSS</a> -->
     <script>
-
+        document.domain = "study.com"
+        // document.cookie = "key=test;domain=study.com"
         // let src = `1" onerror="alert(1)`;
         // let img = `<img src="${src}" alt="">`
         // document.body.innerHTML = img;
 
         // var data = "#{data}";
         // console.log(data);
+        document.addEventListener("click", function () {
+            // let dom = document.getElementById("myIFrame").contentWindow.document;
+            // console.log(dom)
+
+            let popup = window.open("http://www.other.com");
+
+            setTimeout(() => {
+                popup.postMessage("hello", "http://www.other.com");
+            }, 1000)
+        })
+
+
+        localStorage.setItem("test", "nihao")
+
     </script>
 </body>
 

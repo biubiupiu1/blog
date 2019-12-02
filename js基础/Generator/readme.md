@@ -1,4 +1,4 @@
-###### 简单例子
+### 简单例子
 
 
 ```javascript
@@ -25,7 +25,7 @@ hw.next()
 
 > 一直next() 会返回 return 的值，但是for of 循环不会
 
-###### yield表达式如果用在另一个表达式之中，必须放在圆括号里面
+### yield表达式如果用在另一个表达式之中，必须放在圆括号里面
 
 
 ```javascript
@@ -37,7 +37,7 @@ function* demo() {
   console.log('Hello' + (yield 123)); // OK
 }
 ```
-###### 与 Iterator 接口的关系
+### 与 Iterator 接口的关系
 
 
 ```javascript
@@ -50,7 +50,7 @@ myIterable[Symbol.iterator] = function* () {
 
 [...myIterable] // [1, 2, 3]
 ```
-###### Generator 函数执行后，返回一个遍历器对象。该对象本身也具有Symbol.iterator属性，执行后返回自身。
+### Generator 函数执行后，返回一个遍历器对象。该对象本身也具有Symbol.iterator属性，执行后返回自身。
 
 
 ```javascript
@@ -65,7 +65,7 @@ g[Symbol.iterator]() === g
 ```
 
 #### next 方法的参数
-###### yield表达式本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield表达式的返回值。
+### yield表达式本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield表达式的返回值。
 
 ```javascript
 function* f() {
@@ -108,7 +108,7 @@ b.next(13) // { value:42, done:true }
 > 
 > 如果向next方法提供参数，返回结果就完全不一样了。上面代码第一次调用b的next方法时，返回x+1的值6；第二次调用next方法，将上一次yield表达式的值设为12，因此y等于24，返回y / 3的值8；第三次调用next方法，将上一次yield表达式的值设为13，因此z等于13，这时x等于5，y等于24，所以return语句的值等于42。
 
-###### 注意，由于next方法的参数表示上一个yield表达式的返回值，所以在第一次使用next方法时，传递参数是无效的。V8 引擎直接忽略第一次使用next方法时的参数，只有从第二次使用next方法开始，参数才是有效的。从语义上讲，第一个next方法用来启动遍历器对象，所以不用带有参数。
+### 注意，由于next方法的参数表示上一个yield表达式的返回值，所以在第一次使用next方法时，传递参数是无效的。V8 引擎直接忽略第一次使用next方法时的参数，只有从第二次使用next方法开始，参数才是有效的。从语义上讲，第一个next方法用来启动遍历器对象，所以不用带有参数。
 
 
 ```javascript
@@ -128,7 +128,7 @@ genObj.next('b')
 // 2. b
 ```
 
-###### 如果想要第一次调用next方法时，就能够输入值，可以在 Generator 函数外面再包一层。
+### 如果想要第一次调用next方法时，就能够输入值，可以在 Generator 函数外面再包一层。
 
 
 ```javascript
@@ -171,7 +171,7 @@ for (let v of foo()) {
 
 > 上面代码使用for...of循环，依次显示 5 个yield表达式的值。这里需要注意，一旦next方法的返回对象的done属性为true，for...of循环就会中止，且不包含该返回对象，所以上面代码的return语句返回的6，不包括在for...of循环之中。
 
-###### Iterator 使用 Generator实现
+### Iterator 使用 Generator实现
 
 
 ```javascript
@@ -227,7 +227,7 @@ try {
 这种行为其实很好理解，因为第一次执行next方法，等同于启动执行 Generator 函数的内部代码，否则 Generator 函数还没有开始执行，这时throw方法抛错只可能抛出在函数外部。
 
 
-###### throw方法被捕获以后，会附带执行下一条yield表达式。也就是说，会附带执行一次next方法
+### throw方法被捕获以后，会附带执行下一条yield表达式。也就是说，会附带执行一次next方法
 ```javascript
 var gen = function* gen(){
   try {
@@ -245,7 +245,7 @@ g.throw() // b
 g.next() // c
 ```
 
-###### Generator 函数体外抛出的错误，可以在函数体内捕获；反过来，Generator 函数体内抛出的错误，也可以被函数体外的catch捕获。
+### Generator 函数体外抛出的错误，可以在函数体内捕获；反过来，Generator 函数体内抛出的错误，也可以被函数体外的catch捕获。
 
 
 ```javascript
@@ -292,7 +292,7 @@ g.next()        // { value: undefined, done: true }
 
 > 如果return方法调用时，不提供参数，则返回值的value属性为undefined。
 
-###### 如果 Generator 函数内部有try...finally代码块，且正在执行try代码块，那么return方法会推迟到finally代码块执行完再执行。
+### 如果 Generator 函数内部有try...finally代码块，且正在执行try代码块，那么return方法会推迟到finally代码块执行完再执行。
 
 
 ```javascript
@@ -319,7 +319,7 @@ g.next() // { value: 7, done: true }
 
 #### yield* 表达式 
 
-###### ES6 提供了yield*表达式，作为解决办法，用来在一个 Generator 函数里面执行另一个 Generator 函数。
+### ES6 提供了yield*表达式，作为解决办法，用来在一个 Generator 函数里面执行另一个 Generator 函数。
 
 
 ```javascript
@@ -367,7 +367,7 @@ gen().next() // { value:"a", done:false }
 ```
 > 如果yield*后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。上面代码中，yield命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器对象。
 
-###### 如果被代理的 Generator 函数有return语句，那么就可以向代理它的 Generator 函数返回数据。
+### 如果被代理的 Generator 函数有return语句，那么就可以向代理它的 Generator 函数返回数据。
 
 
 ```javascript
@@ -418,7 +418,7 @@ function* logReturned(genObj) {
 > 上面代码中，存在两次遍历。第一次是扩展运算符遍历函数logReturned返回的遍历器对象，第二次是yield*语句遍历函数genFuncWithReturn返回的遍历器对象。这两次遍历的效果是叠加的，最终表现为扩展运算符遍历函数genFuncWithReturn返回的遍历器对象。所以，最后的数据表达式得到的值等于[ 'a', 'b' ]。但是，函数genFuncWithReturn的return语句的返回值The result，会返回给函数logReturned内部的result变量，因此会有终端输出。
 
 
-###### yield*命令可以很方便地取出嵌套数组的所有成员。
+### yield*命令可以很方便地取出嵌套数组的所有成员。
 
 
 ```javascript
@@ -545,7 +545,7 @@ it.next();
 
 #### Generator 函数的异步应用
 
-###### JavaScript 语言的 Thunk 函数
+### JavaScript 语言的 Thunk 函数
 
 ```javascript
 // 正常版本的readFile（多参数版本）
@@ -564,7 +564,7 @@ readFileThunk(callback);
 > 上面代码中，fs模块的readFile方法是一个多参数函数，两个参数分别为文件名和回调函数。经过转换器处理，它变成了一个单参数函数，只接受回调函数作为参数。这个单参数版本，就叫做 Thunk 函数。
 
 
-###### Thunk 函数的自动流程管理
+### Thunk 函数的自动流程管理
 
 
 ```javascript
