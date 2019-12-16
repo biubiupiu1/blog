@@ -1,27 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Promise</title>
-</head>
-<body>
-<script>
-    const someAsyncThing = function() {
-        return new Promise(function(resolve, reject) {
-            // 下面一行会报错，因为x没有声明
-            resolve(x + 2);
+  <head>
+    <meta charset="UTF-8" />
+    <title>Promise</title>
+  </head>
+  <body>
+    <script>
+      Promise.resolve()
+        .then(res => {
+          return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000);
+          });
+        })
+        .then(res => {
+          return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000);
+          });
+        })
+        .then(res => {
+          return new Promise((resolve, reject) => {
+            setTimeout(resolve, 1000);
+          });
+        })
+        .then(res => {
+          console.log('fin');
         });
-    };
 
-    someAsyncThing().then(function() {
-        return someOtherAsyncThing();
-    }).catch(function(error) {
-        console.log('oh no', error);
-        // 下面一行会报错，因为 y 没有声明
-        y + 2;
-    }).then(function() {
-        console.log('carry on');
-    });
-</script>
-</body>
+      new Promise((resolve, reject) => {
+        console.log('promise1');
+        resolve(1);
+        new Promise((resolve, reject) => {
+          console.log('promise2');
+          resolve(2);
+        }).then(res => {
+          console.log('then2');
+        });
+      }).then(res => {
+        console.log('then1');
+      });
+
+      let promise1 = new Promise((resolve, reject) => {
+        resolve(
+          new Promise((resolve, reject) => {
+            setTimeout(resolve, 2000);
+          })
+        );
+      });
+
+      let promise2 = new Promise((resolve, reject) => {
+        resolve(
+          new Promise((resolve, reject) => {
+            setTimeout(
+              resolve(
+                new Promise((resolve, reject) => {
+                  setTimeout(resolve, 2000);
+                })
+              ),
+              2000
+            );
+          })
+        );
+      });
+
+      console.log(promise1);
+
+      Promise.reject(1)
+        .then(
+          res => {
+            console.log('then 1');
+          },
+          err => {
+            console.log('err 1');
+          }
+        )
+        .then(
+          res => {
+            console.log('then 2');
+          },
+          err => {
+            console.log('err 2');
+          }
+        );
+    </script>
+  </body>
 </html>
