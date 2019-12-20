@@ -64,22 +64,6 @@
   Vue.prototype._u = resolveScopedSlots
   Vue.prototype._g = bindObjectListeners
 
-  // 
-  Vue.prototype.$nextTick = function() {}
-  Vue.prototype._render = function() {
-    ...
-    const { render, _parentVnode } = vm.$options
-    render.call(vm._renderProxy, vm.$createElement)
-    ...
-  }
-
-  // render 函数 
-  (function anonymous(
-  ) {
-  with(this){return _c('div',{attrs:{"id":"app"}},[_v("\n    "+_s(fullMsg)+"\n  ")])}
-  })
-
-  // 还有一个 vm._c 是在 vm._init 中的 initRender 初始化的 , 其实就是 $createElement
   ````
 
 + core/index.js
@@ -484,3 +468,556 @@ initProxy = function initProxy (vm) {
   }
 }
 ````
+
+## vm.$mount 生成 render 函数
+
+````javascript
+
+  const { render, staticRenderFns } = compileToFunctions(template, {
+    outputSourceRange: process.env.NODE_ENV !== 'production',
+    shouldDecodeNewlines,
+    shouldDecodeNewlinesForHref,
+    delimiters: options.delimiters,
+    comments: options.comments
+  }, this)
+
+  options.render = render
+  options.staticRenderFns = staticRenderFns
+
+  Vue.prototype.$nextTick = function() {}
+  Vue.prototype._render = function() {
+    ...
+    const { render, _parentVnode } = vm.$options
+    render.call(vm._renderProxy, vm.$createElement)
+    ...
+  }
+
+  // render 函数
+  (function anonymous() {
+    with (this) {
+      return _c(
+        'div',
+        { attrs: { id: 'app' } },
+        [_v('\n  ' + _s(fullMsg) + '\n  '), _c('component-a')],
+        1
+      );
+    }
+  });
+  // 还有一个 vm._c 是在 vm._init 中的 initRender 初始化的 , 其实就是 $createElement
+````
+
+## 生成 VNode 
+
+**runtime-compile $mount -> runtime -> $mount -> mountComponent -> vm._update(vm._render(), hydrating)**
+
+vm._render 生成 VNode , vm._update 生成 DOM 
+
+VNode 是通过渲染函数生成的 , 而渲染函数是通过我们自己编写或者通过模板编译过来的( `$mount` 函数编译生成 render 函数) , render 函数长这样：
+
+````javascript
+(function anonymous() {
+  with (this) {
+    return _c(
+      'div',
+      { attrs: { id: 'app' } },
+      [_v('\n  ' + _s(fullMsg) + '\n  '), _c('component-a')],
+      1
+    );
+  }
+});
+````
+
+> 在生成的过程中如果遇到是 component 的话会创建一个组件 VNode , 这个过程会创建组件构造函数 , 安装组件钩子函数 , 实例化 VNode , 东西放在 options 中
+
+````javascript
+export function createComponent (
+  Ctor: Class<Component> | Function | Object | void,
+  data: ?VNodeData,
+  context: Component,
+  children: ?Array<VNode>,
+  tag?: string
+): VNode | Array<VNode> | void {
+
+
+  Ctor = baseCtor.extend(Ctor)
+
+  installComponentHooks(data)
+
+  const vnode = new VNode(
+    `vue-component-${Ctor.cid}${name ? `-${name}` : ''}`,
+    data, undefined, undefined, undefined, context,
+    { Ctor, propsData, listeners, tag, children },
+    asyncFactory
+  )
+
+  // Weex specific: invoke recycle-list optimized @render function for
+  // extracting cell-slot template.
+  // https://github.com/Hanks10100/weex-native-directive/tree/master/component
+  /* istanbul ignore if */
+  if (__WEEX__ && isRecyclableComponent(vnode)) {
+    return renderRecyclableComponentTemplate(vnode)
+  }
+
+  return vnode
+}
+````
+
+
+> 可以看出是深度优先创建 VNode 的 , 即会先创建 _s( fullMsg ) 再 _v(...) 再 _c('component-a') 再最外面的 _c , children 是通过参数传进来的
+
+构建出来的 VNode 如图
+
+![](http://dev.biubiupiu.cn/20191216195010.png)
+
+component 好像先不用生成 VNode
+
+## vm._update 
+
+这里会调用 __patch__ 方法进行生成 DOM 操作 , 然后根据 VNode 深度优先递归调用 createElm 生成 DOM 树 , 再最后将 DOM 插入到 body 上 , 再删除以前的 DOM
+
+````javascript
+function createElm (
+  vnode,
+  insertedVnodeQueue,
+  parentElm,
+  refElm,
+  nested,
+  ownerArray,
+  index
+) {
+
+  vnode.isRootInsert = !nested // for transition enter check
+
+  // 判断是否为 component , 如果是则生成 component
+  if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
+    return
+  }
+
+  const data = vnode.data
+  const children = vnode.children
+  const tag = vnode.tag
+  if (isDef(tag)) {
+    // 生成占位符 
+    vnode.elm = vnode.ns
+      ? nodeOps.createElementNS(vnode.ns, tag)
+      : nodeOps.createElement(tag, vnode)
+    setScope(vnode)
+
+    /* istanbul ignore if */
+    if (__WEEX__) {
+      // ...
+    } else {
+      // 生成子 VNode
+      createChildren(vnode, children, insertedVnodeQueue)
+      if (isDef(data)) {
+        invokeCreateHooks(vnode, insertedVnodeQueue)
+      }
+      // 将生成的 DOM appendChild 到父 DOM 这里的 parentElm 其实就是父节点 DOM , 最外层的 VNode 的 parentElm 是 docqument.body , 当 createChildren 的时候 , vnode.ele 会被作为子节点的 parentElm 
+      insert(parentElm, vnode.elm, refElm)
+    }
+
+    if (process.env.NODE_ENV !== 'production' && data && data.pre) {
+      creatingElmInVPre--
+    }
+  } else if (isTrue(vnode.isComment)) {
+    vnode.elm = nodeOps.createComment(vnode.text)
+    insert(parentElm, vnode.elm, refElm)
+  } else {
+    vnode.elm = nodeOps.createTextNode(vnode.text)
+    insert(parentElm, vnode.elm, refElm)
+  }
+}
+
+function createChildren (vnode, children, insertedVnodeQueue) {
+  if (Array.isArray(children)) {
+    if (process.env.NODE_ENV !== 'production') {
+      checkDuplicateKeys(children)
+    }
+    for (let i = 0; i < children.length; ++i) {
+      // 第三个参数是刚刚的父节点 
+      createElm(children[i], insertedVnodeQueue, vnode.elm, null, true, children, i)
+    }
+  } else if (isPrimitive(vnode.text)) {
+    nodeOps.appendChild(vnode.elm, nodeOps.createTextNode(String(vnode.text)))
+  }
+}
+````
+
+## createComponent
+
+前面在生成 component VNode 的时候只是生成了一个 VNode 外壳 , 并在 VNode.data 上挂载了 相关 hook , 并没有对 component 里面进行生成 VNode。
+
+所以当我们进行 patch 生成 DOM 的时候会判断当前是普通元素还是 component ， 如果是 component , 那么会执行 createComponent 函数 
+
+````javascript
+function createElm(
+  vnode,
+  insertedVnodeQueue,
+  parentElm,
+  refElm,
+  nested,
+  ownerArray,
+  index
+) {
+  if (isDef(vnode.elm) && isDef(ownerArray)) {
+    // This vnode was used in a previous render!
+    // now it's used as a new node, overwriting its elm would cause
+    // potential patch errors down the road when it's used as an insertion
+    // reference node. Instead, we clone the node on-demand before creating
+    // associated DOM element for it.
+    vnode = ownerArray[index] = cloneVNode(vnode);
+  }
+
+  vnode.isRootInsert = !nested; // for transition enter check
+
+  // 判断是否为 component , 如果是则生成 component
+  if (createComponent(vnode, insertedVnodeQueue, parentElm, refElm)) {
+    return;
+  }
+
+  const data = vnode.data;
+  const children = vnode.children;
+  const tag = vnode.tag;
+  if (isDef(tag)) {
+
+    // 生成占位符 
+    vnode.elm = vnode.ns
+      ? nodeOps.createElementNS(vnode.ns, tag)
+      : nodeOps.createElement(tag, vnode);
+    setScope(vnode);
+
+    // 生成子元素
+    createChildren(vnode, children, insertedVnodeQueue);
+    if (isDef(data)) {
+      invokeCreateHooks(vnode, insertedVnodeQueue);
+    }
+
+    // 将生成的 DOM appendChild 到父 DOM 这里的 parentElm 其实就是父节点 DOM , 最外层的 VNode 的 parentElm 是 docqument.body , 当 createChildren 的时候 , vnode.ele 会被作为子节点的 parentElm 
+    insert(parentElm, vnode.elm, refElm);
+
+    if (process.env.NODE_ENV !== 'production' && data && data.pre) {
+      creatingElmInVPre--;
+    }
+  } else if (isTrue(vnode.isComment)) {
+    vnode.elm = nodeOps.createComment(vnode.text);
+    insert(parentElm, vnode.elm, refElm);
+  } else {
+    vnode.elm = nodeOps.createTextNode(vnode.text);
+    insert(parentElm, vnode.elm, refElm);
+  }
+}
+
+````
+
+可以看到在深度优先遍历 VNode 过程中 , 如果遇到是 component , 那就得先创建 component , 其实 component 也算是一个 vue 实例 , 他是继承 Vue 的 , 在创建过程中是这样的：
+
+#### createComponent 
+
+````javascript
+function createComponent (vnode, insertedVnodeQueue, parentElm, refElm) {
+  let i = vnode.data
+  if (isDef(i)) {
+    const isReactivated = isDef(vnode.componentInstance) && i.keepAlive
+    if (isDef(i = i.hook) && isDef(i = i.init)) {
+      // 执行 init hook
+      i(vnode, false /* hydrating */)
+    }
+    if (isDef(vnode.componentInstance)) {
+      // 子组件全部渲染完毕了 , 将子组件 DOM 挂载在父组件 DOM
+      initComponent(vnode, insertedVnodeQueue)
+      insert(parentElm, vnode.elm, refElm)
+      if (isTrue(isReactivated)) {
+        reactivateComponent(vnode, insertedVnodeQueue, parentElm, refElm)
+      }
+      return true
+    }
+  }
+}
+````
+
+#### componentVNodeHooks 
+
+````javascript
+const componentVNodeHooks = {
+  init (vnode: VNodeWithData, hydrating: boolean): ?boolean {
+    if (
+      vnode.componentInstance &&
+      !vnode.componentInstance._isDestroyed &&
+      vnode.data.keepAlive
+    ) {
+      // kept-alive components, treat as a patch
+      const mountedNode: any = vnode // work around flow
+      componentVNodeHooks.prepatch(mountedNode, mountedNode)
+    } else {
+      // 创建子组件实例 vm , 并且这里传入了 activeInstance ( 当前的父实例 , 挺巧妙的 )
+      const child = vnode.componentInstance = createComponentInstanceForVnode(
+        vnode,
+        activeInstance
+      )
+      // 接管 $mount 方法
+      child.$mount(hydrating ? vnode.elm : undefined, hydrating)
+    }
+  },
+}
+````
+
+#### createComponentInstanceForVnode
+
+````javascript
+export function createComponentInstanceForVnode (
+  vnode: any, // we know it's MountedComponentVNode but flow doesn't
+  parent: any, // activeInstance in lifecycle state
+): Component {
+  // 将刚刚传入的父实例 vm 放置 options , 以便将 component 实例挂载在父实例下 （在 initLifecycle)
+  const options: InternalComponentOptions = {
+    _isComponent: true,
+    _parentVnode: vnode,
+    parent
+  }
+  // check inline-template render functions
+  const inlineTemplate = vnode.data.inlineTemplate
+  if (isDef(inlineTemplate)) {
+    options.render = inlineTemplate.render
+    options.staticRenderFns = inlineTemplate.staticRenderFns
+  }
+  // 生成 component 实例
+  return new vnode.componentOptions.Ctor(options)
+}
+````
+
+## Ctor（Sub）
+
+````javascript
+const Sub = function VueComponent (options) {
+  this._init(options)
+}
+````
+
+## _init
+
+````javascript
+Vue.prototype._init = function (options?: Object) {
+  const vm: Component = this
+  // merge options
+  if (options && options._isComponent) {
+    // 由于上面传入了 _isComponent = true , 所以会往这里执行
+    initInternalComponent(vm, options)
+  } else {
+    vm.$options = mergeOptions(
+      resolveConstructorOptions(vm.constructor),
+      options || {},
+      vm
+    )
+  }
+  // ...
+  if (vm.$options.el) {
+    vm.$mount(vm.$options.el)
+  } 
+}
+````
+
+#### initInternalComponent
+
+````javascript
+export function initInternalComponent (vm: Component, options: InternalComponentOptions) {
+  // 这里给 component 实例创建 $options 并赋值 parent 和 _parentVnode （ 组件的 VNode ）
+  const opts = vm.$options = Object.create(vm.constructor.options)
+  // doing this because it's faster than dynamic enumeration.
+  const parentVnode = options._parentVnode
+  opts.parent = options.parent
+  opts._parentVnode = parentVnode
+
+  const vnodeComponentOptions = parentVnode.componentOptions
+  opts.propsData = vnodeComponentOptions.propsData
+  opts._parentListeners = vnodeComponentOptions.listeners
+  opts._renderChildren = vnodeComponentOptions.children
+  opts._componentTag = vnodeComponentOptions.tag
+
+  if (options.render) {
+    opts.render = options.render
+    opts.staticRenderFns = options.staticRenderFns
+  }
+}
+````
+
+#### $mount
+
+执行完了 initInternalComponent 然后就会执行 $mount , 这个 $mount 是在 init hooks 里面调用的
+
+#### _render
+
+````javascript
+Vue.prototype._render = function (): VNode {
+  const vm: Component = this
+  const { render, _parentVnode } = vm.$options
+
+  // 指向当前的父 VNode
+  vm.$vnode = _parentVnode
+  // render self
+  let vnode
+  try {
+    vnode = render.call(vm._renderProxy, vm.$createElement)
+  } catch (e) {
+    // ...
+  }
+  // 生成的 VNode 的 parent = 父 VNode
+  vnode.parent = _parentVnode
+  return vnode
+}
+````
+
+#### _update
+
+因为我们的 VNode 是一个优先递归的遍历过程 , 所以当我们实例化一个子组件的时候要想挂载到父组件上 , 我们就得记录父组件的 vm , 所以在 _update 函数中就巧妙的用模块的全局变量和闭包巧妙的记住了父组件 vm , 具体做法是我们调用 _update 函数的时候记录当前 vm 为 activeInstance , 然后 _update 内部会执行 patch , 如果有子组件肯定就会再实例化子组件 , 那么他也会再执行 _update 函数 , 这个时候 activeInstance 就是他的父实例了 。
+当 patch 执行完毕之后 , 说明当前组件已经渲染完了 , 不会再有子组件了 , 所以就会把上一个 activeInstance = prevActiveInstance , 有点类似出栈进栈的感觉。（ tree.js 小demo） 。 这个 activeInstance 主要是用于上面的  componentVNodeHooks 函数
+
+
+````javascript
+export let activeInstance: any = null
+Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
+    // ...
+    const prevActiveInstance = activeInstance
+    activeInstance = vm
+    if (!prevVnode) {
+      // initial render
+      vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
+    } else {
+      // updates
+      vm.$el = vm.__patch__(prevVnode, vnode)
+    }
+    activeInstance = prevActiveInstance
+    // ...
+}
+````
+
+#### patch
+
+````javascript
+vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */)
+ 
+function patch (oldVnode, vnode, hydrating, removeOnly) {
+  // ...
+  let isInitialPatch = false
+  const insertedVnodeQueue = []
+
+  if (isUndef(oldVnode)) {
+    // empty mount (likely as component), create new root element
+    isInitialPatch = true
+    createElm(vnode, insertedVnodeQueue)
+  } else {
+    // ...
+  }
+  // ...
+}
+````
+
+执行完这些又会回到最开的 createElm 函数 , 整个过程就是一个深度递归创建的过程 , createElm 遇到原始标签则直接创建 , 如果遇到组件则需要实例化组件 , 这个实例化是一个递归的过程 , 所以在实例化组件的时候也会碰到组件 , 过程也是一样的 
+
++ 再实例化子组件的过程中 , 完完全全是重新进行一遍从 _init 开始生成实例过程 , 到最后 patch 返回根节点 DOM 赋值到 VueComponent 实例上的 el , 再回到 createComponent , 执行 initComponent , 将 VueComponent.el 赋值到 VNode.elm , 再将 VNode.elm appendChild 到父 DOM 上
+
+![](http://dev.biubiupiu.cn/20191218144923.png)
+
++ 子组件实例 VueComponent 是怎么找到父实例的 , 这就是前面说到的那个技巧 , 利用模块的全局变量和闭包 , 保证我们每次执行 _update 的时候都将 activeInstance 执行当前实例 , 这样就能够保证在当前实例进行 patch 的时候发现了子组件 , 它进行实例化的时候能够获取到刚刚记录的 activeInstance 也就是当前实例 , 这个 activeInstance 会作为 parent 参数传入 options ; 当然如果他也执行了 _update , activeInstance 也是同样指向他的 , 只不过执行完 _update 会将上一个 activeInstance 重新还原回来 , 有点类似栈的感觉 , 就这样的一个技巧将每个实例化都能够找到父实例 (小 demo tree.js)
+
+**VNode 图：**
+
+![](http://dev.biubiupiu.cn/20191218151149.png)
+
+对应js
+
+````javascript
+var ComponentA = {
+  data() {
+    return {
+      msg: "ComponentA"
+    }
+  },
+  template: '<div class="componentA"><p>{{msg}}</p></div>'
+}
+
+<div id="app">
+  {{fullMsg}}
+  <div class="test">test</div>
+  <component-a></component-a>
+</div>
+````
+
+**组件 VNode 图**
+
+![](http://dev.biubiupiu.cn/20191218151342.png)
+
+child 是指向的 componentInstance
+
+````javascript
+get child ()  {
+  return this.componentInstance
+}
+````
+
+> VNode 是根据渲染函数生成的 
+
+````javascript
+(function anonymous() {
+    with (this) {
+        return _c('div', {
+            attrs: {
+                "id": "app"
+            }
+        }, [_v("\n  " + _s(fullMsg) + "\n  "), _c('div', {
+            staticClass: "test"
+        }, [_v("test")]), _v(" "), _c('component-a')], 1)
+    }
+})
+````
+
+> _c 对应 $createElement , VNode 里面的 children 是先生成再作为 children 参数传入的 , 所以也是深度优先生成
+
+**总结： VNode 是深度优先生成的 , DOM 也是深度优先生成的 , 也就解释了父组件和子组件的生命周期 : 父 beforeCreate -> 父 beforeMount -> 子 beforeCreate -> 子 beforeMount -> 子 mount -> 父 mount**
+
+## 合并配置
+
+vue 实例合并配置是在 this._init
+
+````javascript
+// 利用合并策略合并选项
+vm.$options = mergeOptions(
+  resolveConstructorOptions(vm.constructor),
+  options || {},
+  vm
+)
+export function resolveConstructorOptions (Ctor: Class<Component>) {
+  let options = Ctor.options
+  return options
+}
+````
+
+component 实例合并配置是在生成组件 VNode 的时候就已经合并了
+
+````javascript
+Vue.extend = function (extendOptions: Object): Function {
+  // ...
+  Sub.options = mergeOptions(
+    Super.options,
+    extendOptions
+  )
+
+  // ...
+  // keep a reference to the super options at extension time.
+  // later at instantiation we can check if Super's options have
+  // been updated.
+  Sub.superOptions = Super.options
+  Sub.extendOptions = extendOptions
+  Sub.sealedOptions = extend({}, Sub.options)
+
+  // ...
+  return Sub
+}
+
+````
+
+> 我们只保留关键逻辑，这里的 extendOptions 对应的就是前面定义的组件对象，它会和 Vue.options 合并到 Sub.opitons 中。
+
+[参考](https://ustbhuangyi.github.io/vue-analysis/v2/components/merge-option.html#%E7%BB%84%E4%BB%B6%E5%9C%BA%E6%99%AF)
+
+> 这里对组件的选项配置合并是在第一次注册的时候发生的 , 并且会将生成的组件类缓存起来 , 所以一个组件只会执行一次生成类函数
+
