@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <style>
+      body {
+        height: 1500px;
+        overflow-x: hidden;
+      }
+
+      .composited {
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        position: absolute;
+        left: 50px;
+        top: 400px;
+        z-index: 3;
+        transform: translateZ(0);
+      }
+
+      .overlap {
+        width: 200px;
+        height: 200px;
+        background-color: green;
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        z-index: 2;
+      }
+    </style>
+    <div class="composited"></div>
+    <div class="overlap"></div>
+  </body>
+</html>

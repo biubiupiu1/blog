@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>渲染层</title>
+    <style>
+      div {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        margin: 0;
+      }
+      .one {
+        left: 0;
+        top: 0;
+        background: rgb(255, 0, 0);
+        will-change: transform;
+      }
+      .two {
+        left: 80px;
+        top: 80px;
+        background: rgb(0, 255, 0);
+      }
+      .three {
+        left: 160px;
+        top: 160px;
+        background: rgb(0, 0, 255);
+      }
+      .four {
+        left: 240px;
+        top: 240px;
+        background: rgb(49, 15, 15);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo1">
+      <div class="one"></div>
+      <div class="two"></div>
+      <div class="three"></div>
+      <div class="four"></div>
+    </div>
+  </body>
+</html>
