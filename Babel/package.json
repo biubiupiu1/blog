@@ -1,0 +1,17 @@
+{
+  "name": "babel",
+  "version": "1.0.0",
+  "description": "Babel 的核心功能包含在 `@babel/core` 模块中。看到 `core` 这个词了吧，意味着核心，没有它，在 `babel` 的世界里注定寸步难行。不安装 `@babel/core`，无法使用 `babel` 进行编译。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.dev.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/webpack": "^4.41.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
+}

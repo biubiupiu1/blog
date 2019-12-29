@@ -127,55 +127,6 @@ module.exports.foo = function () {
 }
 
 //main.js
-import {helloworld, foo} from "./helloworld.js";
-console.log(helloworld)
-console.log(foo)
-
-//被转化成
-
-/* harmony import */ var _helloworld_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(4);
-/* harmony import */ var _helloworld_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_helloworld_js__WEBPACK_IMPORTED_MODULE_3__);
-
-
-console.log(_helloworld_js__WEBPACK_IMPORTED_MODULE_3__["helloworld"]);
-console.log(_helloworld_js__WEBPACK_IMPORTED_MODULE_3__["foo"]);
-
-````
-
-````javascript
-//es6.js
-let test = 2;
-export default test;
-export let test2 = 3;
-
-//main.js
-import { default as test, test2 } from "./es6"
-console.log(test)
-console.log(test2)
-
-//被转化成
-
-/* harmony import */ var _es6__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(5);
-
-console.log(_es6__WEBPACK_IMPORTED_MODULE_4__["default"]);
-console.log(_es6__WEBPACK_IMPORTED_MODULE_4__["test2"]);
-
-````
-
-> 以上这两种方法其实没有太大的区别
-
-
-````javascript
-//helloworld.js
-module.exports.helloworld = function () {
-    return "hello world"
-}
-
-module.exports.foo = function () {
-    return "foo"
-}
-
-//main.js
 import helloworld from "./helloworld.js";
 console.log(helloworld)
 
@@ -202,4 +153,54 @@ console.log(helloworld)
 
 console.log(_helloworld_js__WEBPACK_IMPORTED_MODULE_3___default.a);
 
+````
+
++ 当我们用 require 去引入 es 模块的时候 , 导入的是整个包
+
+````javascript
+{
+    a: 1,
+    b: 2,
+    default: 3
+    __esModule: true
+}
+````
+
++ 当我们用 require 去引入 cjs 模块的时候 , 导入的还是是整个包
+
+````javascript
+{
+    a: 1,
+    b: 2,
+}
+````
+
++ 当我们用 import 去引入 cjs 模块的时候
+    + 默认导入： 这个时候需要去判断是否有 __esModule 属性 , 如果有则导入 default 属性 ， 没有则导入整个包
+    +  name import： 对应的是 cjs 上 exports 的相应属性
+    +  * import： 导入整个 exports
+
+
++ 当我们用 import 去引入 es 模块的时候
+    + 默认导入： 直接取 exports 对象的 default 属性
+    +  name import： 对应的是 exports 的相应属性
+    +  * import： 导入整个 exports
+
+
+> 这里面需要注意 es 模块会做特殊处理 , 会对默认导出添加到 exports.default , name export 添加到 exports 上 , 并且所有属性都是绑定的 get , 也就是说在 es 模块内部更改一个导出的值 , 相应的导入处也是会改变的 , 不管这个属性是原始值还是对象值
+
+````javascript
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return say; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return a; });
+function say() {}
+let a = 1;
+
+setTimeout(() => {
+  a = 2;
+});
+/***/ }),
 ````

@@ -55,3 +55,18 @@ location /dist {
 ````
 
 > 可以使用以上代码处理vue-router的history 模式中404的问题，具体逻辑就是访问/dist/about/ , nginx尝试找有没有这个路径的文件，没有就加上/ 看有没有这个文件夹，再没有就直接返回dist目录下的index.html了
+
+
+### 目录匹配
+
+![](http://dev.biubiupiu.cn/20191226105838.png)
+
+![](http://dev.biubiupiu.cn/20191226105918.png)
+
+> 使用正则的时候需要自己捕捉名称进行拼接
+
+````nginx
+location ~ ^/users/(.+\.(?:gif|jpe?g|png))$ {
+    alias /data/w3/images/$1;
+}
+````
