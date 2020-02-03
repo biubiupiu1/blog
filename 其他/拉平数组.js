@@ -1,5 +1,19 @@
 let arr = [1, 2, [3, 4, [5, 6]]];
 
+function flat(arr) {
+  let res = [];
+  arr.forEach(element => {
+    if (Array.isArray(element)) {
+      res = res.concat(flat(element));
+    } else {
+      res.push(element);
+    }
+  });
+  return res;
+}
+
+console.log(flat(arr));
+
 /* 
   迭代写法 
 */
@@ -77,7 +91,7 @@ function* generatorFlat(arr, num = 1) {
   if (num <= 0) return arr.slice();
 
   for (let item of arr) {
-    console.log(total++)
+    console.log(total++);
     if (Array.isArray(item)) {
       yield* generatorFlat(item, num - 1);
     } else {
@@ -85,7 +99,6 @@ function* generatorFlat(arr, num = 1) {
     }
   }
 }
-
 
 Array.prototype.fakeFlat = function(num = 1) {
   if (!Number(num) || Number(num) < 0) {
@@ -95,7 +108,7 @@ Array.prototype.fakeFlat = function(num = 1) {
   while (num > 0) {
     if (
       arr.some(x => {
-        console.log(total++)
+        console.log(total++);
         return Array.isArray(x);
       })
     ) {
@@ -108,8 +121,16 @@ Array.prototype.fakeFlat = function(num = 1) {
   return arr;
 };
 
-const arr1 = [1, 2, 3, 4, [1, 2, 3, [1, 2, 3, [1, 2, 3]]], 5, "string", { name: "弹铁蛋同学" }]
-console.log(...generatorFlat(arr1, Infinity))
-
+const arr1 = [
+  1,
+  2,
+  3,
+  4,
+  [1, 2, 3, [1, 2, 3, [1, 2, 3]]],
+  5,
+  'string',
+  { name: '弹铁蛋同学' }
+];
+console.log(...generatorFlat(arr1, Infinity));
 
 setTimeout(() => {}, 3600 * 60);
