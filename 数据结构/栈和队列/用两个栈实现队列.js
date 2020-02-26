@@ -2,14 +2,12 @@ const stack1 = [];
 const stack2 = [];
 
 function pop() {
-  while (stack1.length) {
-    stack2.push(stack1.pop());
+  if (!stack2.length) {
+    while (stack1.length) {
+      stack2.push(stack1.pop());
+    }
   }
-  let res = stack2.pop();
-  while (stack2.length) {
-    stack1.push(stack2.pop());
-  }
-  return res;
+  return stack2.pop() || -1;
 }
 
 function push(item) {
