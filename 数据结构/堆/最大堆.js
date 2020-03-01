@@ -29,7 +29,7 @@ function adjustMaxHeap(array, index, length) {
  */
 function createMaxHeap(arr, length) {
   let len = arr.length;
-  for (let i = (len / 2) >> 0; i >= 0; i--) {
+  for (let i = (len / 2) >> 0 - 1; i >= 0; i--) {
     adjustMaxHeap(arr, i, len);
   }
   return arr;

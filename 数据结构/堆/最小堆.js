@@ -28,7 +28,7 @@ function adjustMinHeap(array, index, length) {
  */
 function createMinHeap(arr) {
   let len = arr.length;
-  for (let i = (len / 2) >> 0; i >= 0; i--) {
+  for (let i = (len / 2) >> 0 - 1; i >= 0; i--) {
     adjustMinHeap(arr, i, len);
   }
   return arr;
