@@ -6,7 +6,10 @@
     <meta http-equiv="cache-control" content="no-cache,no-store, must-revalidate" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>测试浏览器渲染</title>
-        <link rel="stylesheet" href="/red.css">
+
+    <script>
+        setTimeout(() => {console.log(document.querySelectorAll('p'))})
+    </script>
     <!-- <script src="./blue.js" defer></script> -->
     <!-- <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -27,8 +30,10 @@
     </style> -->
 </head>
 
+<link rel="stylesheet" href="/red.css">
 <body>
     <p>Third Line</p>
 </body>
+
 
 </html>

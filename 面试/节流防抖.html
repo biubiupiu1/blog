@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body style="height: 5000px;"></body>
+  <script>
+    let dubounce1 = function(fn, interval) {
+      let timer = null;
+      return function(...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(fn.bind(this, ...args), interval);
+      };
+    };
+
+    let dubounce2 = function(fn, interval) {
+      let timer = null;
+      return function(...args) {
+        let callNow = !timer;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+          timer = null;
+          fn.apply(this, args);
+        }, interval);
+        if (callNow) fn.apply(this, args);
+      };
+    };
+
+    let throttle = function(fn, interval) {
+      let timer = null;
+      return function(...args) {
+        if (timer) return;
+        timer = setTimeout(() => {
+          timer = null;
+          fn.apply(this, args);
+        }, interval);
+      };
+    };
+    
+    window.addEventListener(
+      'scroll',
+      dubounce2(() => {
+        console.log(1);
+      }, 500)
+    );
+  </script>
+</html>

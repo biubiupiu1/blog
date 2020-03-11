@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blob</title>
+  </head>
+  <body>
+    <input id='file' type="file" />
+    <img src="" id='img' alt="">
+    <script>
+      let readerText = new FileReader();
+      readerText.onload = function(res) {
+        console.log(readerText.result);
+      };
+      let text = '<div>hello</div>';
+      let blobText = new Blob([text], { type: 'text/html' });
+      readerText.readAsArrayBuffer(blobText);
+      
+      let readerArray = new FileReader();
+      let u8Buf = new Uint8Array([60, 100, 105, 118, 62, 104, 101, 108, 108, 111, 60, 47, 100, 105, 118, 62])
+      let blobArr = new Blob([u8Buf], { type: 'text/html' })
+      let iframe = document.createElement('iframe');
+      let blobUrl = URL.createObjectURL(blobArr);
+      iframe.src = blobUrl;
+      console.log(blobUrl);
+      document.body.appendChild(iframe)
+      readerArray.readAsText(blobArr);
+      readerArray.onload = function(res) {
+        console.log(readerArray.result);
+      };
+
+      document.querySelector('#file').onchange = function(files) {
+        console.log(this.files[0]);
+        let blob = this.files[0];
+        let url = URL.createObjectURL(blob);
+        document.querySelector('#img').src = url;
+      }
+    </script>
+  </body>
+</html>

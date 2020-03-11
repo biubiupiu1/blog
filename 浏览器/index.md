@@ -3,9 +3,11 @@
 ````html
 <head>
     <script>
-        console.log(document.querySelectorAll("p"));
+        setTimeout(() => {
+            console.log(document.querySelectorAll("p"));
+        });
     <script>
-    <style rel="stylesheet" herf="sellp.css?s=2000" ></style>
+    <link rel="stylesheet" herf="sellp.css?s=2000" >
 </head>
 <body>
     <p>你好</p>

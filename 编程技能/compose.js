@@ -10,10 +10,10 @@ function c(arg) {
 let arr = [a, b, c];
 
 function compose(arr) {
-    return function (...args) {
+    return function (args) {
         return arr.reduceRight((acc, item) => {
-            return [item(acc)];
-        }, args)[0]
+            return item(acc);
+        }, args)
     }
 }
 

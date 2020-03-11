@@ -25,8 +25,9 @@ function push(item) {
 
 push(1);
 push(2);
-console.log(pop());
 push(3);
+console.log(pop());
+push(4);
 console.log(pop());
 console.log(pop());
 console.log(pop());

@@ -1,21 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>css</title>
-</head>
-<body>
+  </head>
+  <body>
+    <a href="" class="a">点我</a>
     <p>第一段</p>
     <p>第二段</p>
     <p>第三段</p>
     <p>第四段</p>
     <p>第五段</p>
-</body>
-<style>
-    p:nth-child(-n + 2) {
-        color: red;
+    <div class="border"></div>
+    <div class="imgs">
+      <img
+        class="img1"
+        src="https://pic4.zhimg.com/v2-def9c21d9ca33a743490a13d157f4208_is.jpg"
+        alt=""
+      />
+      <img
+        class="img1"
+        src="https://pic4.zhimg.com/v2-def9c21d9ca33a743490a13d157f4208_is.jpg"
+        alt=""
+      />
+      <img
+        class="img1"
+        src="https://pic4.zhimg.com/v2-def9c21d9ca33a743490a13d157f4208_is.jpg"
+        alt=""
+      />
+    </div>
+    <div class="inputs">
+      <input class="input1" type="text" name="" id="" />
+      <input class="input1" type="text" name="" id="" />
+      <input class="input1" type="text" name="" id="" />
+    </div>
+    <div class="ver">
+      <span>ssig</span>
+      <img
+        class="img1"
+        src="http://static.nodejs.cn/_static/img/biz/api_nav_kkb.png"
+        alt=""
+      />
+    </div>
+    <div class="after"></div>
+    <div style="">
+      <div class="child"></div>
+      <div class="child" style="transform: translateY(110px);"></div>
+      <div class="child"></div>
+    </div>
+    <div class="san"></div>
+  </body>
+  <style>
+    p:nth-child(n + 2) {
+      color: red;
     }
-</style>
+
+    .border {
+      border-radius: 50px;
+      width: 100px;
+      height: 200px;
+      background-color: #333333;
+    }
+
+    .input1 {
+      margin: 0;
+    }
+
+    .imgs {
+      line-height: 0;
+    }
+
+    .img1 {
+      margin: 0;
+      display: inline-block;
+    }
+
+    .ver {
+      line-height: 50px;
+    }
+
+    .ver span {
+    }
+
+    .ver img {
+      vertical-align: middle;
+    }
+
+    .after {
+      height: 20px;
+    }
+
+    .after::after {
+      content: ' ';
+      display: block;
+      width: 10px;
+      height: 10px;
+    }
+
+    .a:link {
+      color: red;
+    }
+
+    .a:visited {
+      color: greenyellow;
+    }
+
+    .a:hover {
+      color: yellow;
+    }
+
+    .a:active {
+      color: rgb(14, 170, 157);
+    }
+
+    .child {
+      width: 50px;
+      height: 50px;
+      background: gold;
+    }
+
+    .san {
+      width: 0;
+      height: 0;
+      border: 50px solid;
+      border-color: #000 #555 #000 #333;
+      /* border-left: 50px solid transparent;
+      border-right: 50px solid transparent;
+      border-bottom: 50px solid #000; */
+    }
+  </style>
 </html>

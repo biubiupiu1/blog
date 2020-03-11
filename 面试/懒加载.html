@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>懒加载</title>
+  </head>
+  <style>
+    .lazyload {
+      height: 700px;
+    }
+    .lazyload img {
+      background: #f8f9fa;
+    }
+  </style>
+  <body>
+    <div class="lazy">
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share1.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share2.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share3.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share4.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share5.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share6.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share7.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share8.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share9.jpg" src="" alt="" />
+      </div>
+      <div class="lazyload">
+        <img data-src="https://dev.biubiupiu.cn/share10.jpg" src="" alt="" />
+      </div>
+    </div>
+  </body>
+  <script>
+    let imgs = document.querySelectorAll('.lazyload img');
+    imgs.forEach(item => {
+      item.src =
+        'data:image/svg+xml;utf8,<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="622" height="304"></svg>';
+    });
+
+    let clienHeight = document.documentElement.clientHeight;
+
+    function lazyload() {
+      let scrollTop =
+        document.documentElement.scrollTop || document.body.scrollTop;
+      imgs.forEach(item => {
+        if (item.offsetTop < clienHeight + scrollTop) {
+          item.src = item.dataset['src'];
+        }
+      });
+    }
+
+    lazyload();
+
+    let throttle = function(fn, interval) {
+      let timer = null;
+      return function(...args) {
+        if (timer) return;
+        timer = setTimeout(() => {
+          timer = null;
+          fn.apply(this, args);
+        }, interval);
+      };
+    };
+
+    window.addEventListener('scroll', throttle(lazyload, 200));
+  </script>
+</html>

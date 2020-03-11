@@ -60,6 +60,19 @@ path.join('/foo', 'bar', 'baz/asdf', 'quux', '..');
 ![](http://dev.biubiupiu.cn/20191115225958.png)
 
 > 从右往左一直解析，直到遇到绝对路径，没有遇到路径则加上当前的工作目录
+> 当前工作目录是指当前 node 执行的环境
+
+比如如下代码
+
+````javascript
+//test.js
+const path = require('path');
+console.log(path.resolve('./'));
+````
+![](http://dev.biubiupiu.cn/20200305164642.png)
+
+![](http://dev.biubiupiu.cn/20200305164623.png)
+
 
 ````javascript
 path.resolve('/foo/bar', './baz');

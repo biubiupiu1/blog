@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ajax</title>
+  </head>
+  <body>
+    <form id="form" action="">
+      <div>
+        <label for="">用户名</label>
+        <input type="text" name="username" />
+      </div>
+      <div>
+        <label for="">年龄</label>
+        <input type="text" name="age" />
+      </div>
+      <input type="file" name="file" />
+    </form>
+    <button id="submit">提交</button>
+    <script>
+      let btn = document.querySelector('#submit');
+      let form = document.querySelector('#form');
+      function ajax({ url, method, data, header, success, fail }) {
+        return new Promise((resolve, reject) => {
+          let xhr = new XMLHttpRequest();
+          xhr.responseType = 'json';
+          xhr.open(method || 'GET', url);
+          for (let i in header) {
+            xhr.setRequestHeader(i, header[i]);
+          }
+          xhr.send(data);
+          xhr.onload = function() {
+            success(xhr.response);
+            resolve(xhr.response);
+          };
+          xhr.onerror = function() {
+            fail('Network Error');
+            reject('Network Error');
+          };
+        });
+      }
+      btn.addEventListener('click', function() {
+        ajax({
+          url: 'https://web-api.juejin.im/query',
+          data: {
+            operationName: '',
+            query: '',
+            variables: {
+              type: 'ALL',
+              query: '44',
+              after: '',
+              period: 'ALL',
+              first: 20
+            },
+            extensions: { query: { id: 'a53db5867466eddc50d16a38cfeb0890' } }
+          },
+          method: 'POST',
+          header: {
+            'Content-Type': 'multipart/form-data'
+          },
+          success(res) {
+            console.log(res);
+          },
+          fail(err) {
+            console.log(err);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
