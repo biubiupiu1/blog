@@ -12,6 +12,20 @@ function quickSort(arr, left, right) {
   return arr;
 }
 
+function quickSort2(array) {
+  let len = array.length;
+  let stack = [[array, 0, len - 1]];
+  while (stack.length) {
+    let [arr, left, right] = stack.shift();
+    if (left < right) {
+      let index = partition(arr, left, right);
+      stack.push([arr, 0, index - 1]);
+      stack.push([arr, index + 1, right]);
+    }
+  }
+  return arr;
+}
+
 function partition(arr, left, right) {
   let povit = right;
   let index = left;
@@ -25,6 +39,6 @@ function partition(arr, left, right) {
   return index;
 }
 
-console.log(quickSort(arr));
+console.log(quickSort2(arr));
 
 setTimeout(console.log, 3600 * 60);

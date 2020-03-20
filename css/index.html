@@ -8,11 +8,13 @@
   </head>
   <body>
     <a href="" class="a">点我</a>
+    <div class="p">
     <p>第一段</p>
     <p>第二段</p>
     <p>第三段</p>
     <p>第四段</p>
     <p>第五段</p>
+    </div>
     <div class="border"></div>
     <div class="imgs">
       <img
@@ -53,12 +55,15 @@
     <div class="san"></div>
   </body>
   <style>
-    p:nth-child(n + 2) {
+    /* p:nth-child(2n) {
       color: red;
+    } */
+    p:first-child {
+      color: turquoise;
     }
 
     .border {
-      border-radius: 50px;
+      border-radius: 50%;
       width: 100px;
       height: 200px;
       background-color: #333333;

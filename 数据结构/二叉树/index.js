@@ -37,7 +37,7 @@ let arr2tree = function(arr = [1, null, 2, 3]) {
   return first;
 };
 
-const tree = arr2tree([3, 9, 20, null, null, 15, 7]);
+const tree = arr2tree([1, null, 2, 3]);
 
 /**
  * 二叉树前序遍历非递归版本
@@ -81,7 +81,27 @@ const inorderTraversal = function(node) {
   return res;
 };
 
-console.log('中序遍历：', inorderTraversal(tree));
+var inorderTraversal2 = function(root) {
+  let res = [];
+  while (root) {
+    if (root.left) {
+      let node = root.left;
+      while (node.right) {
+        node = node.right;
+      }
+      node.right = root;
+      let temp = root.left;
+      root.left = null;
+      root = temp;
+    } else {
+      res.push(root.val);
+      root = root.right;
+    }
+  }
+  return res;
+};
+
+console.log('中序遍历：', inorderTraversal2(tree));
 
 /**
  * 二叉树后序遍历非递归版本

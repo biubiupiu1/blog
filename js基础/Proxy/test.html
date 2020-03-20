@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      let arr = [];
+      let porxy = new Proxy(arr, {
+        get(target, key) {
+          console.log('get', target, key);
+          return Reflect.get(target, key);
+        },
+        set(target, key, val) {
+          console.log(target.length);
+          console.log('set', target, key, val);
+          if (key === 'length') return true;
+          return Reflect.set(target, key, val);
+        }
+      });
+      console.log(porxy);
+      porxy.push(1);
+      console.log(porxy.length);
+    </script>
+  </body>
+</html>

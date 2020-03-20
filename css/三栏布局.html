@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="layout">
+      <div class="left"></div>
+      <div class="right"></div>
+      <div class="main"></div>
+    </div>
+  </body>
+  <style>
+    .layout {
+      position: relative;
+    }
+
+    .layout div {
+      height: 500px;
+    }
+
+    .layout .left {
+      width: 200px;
+      background: sienna;
+    }
+
+    .layout .right {
+      width: 200px;
+      background: sienna;
+    }
+
+    .layout .main {
+      background: thistle;
+    }
+
+    /* .layout .left {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .layout .right {
+      top: 0;
+      right: 0;
+      position: absolute;
+    }
+
+    .layout .main {
+      position: absolute;
+      left: 200px;
+      right: 200px;
+      background: thistle;
+    } */
+
+    /* .layout {
+      display: flex;
+    }
+
+    .layout .main {
+      flex-grow: 1;
+    } */
+
+    .layout {
+      overflow: hidden;
+    }
+
+    .layout .left {
+      float: left;
+    }
+
+    .layout .right {
+      float: right;
+    }
+
+    .layout .main {
+      margin: 0 200px;
+      overflow: hidden;
+    }
+  </style>
+  <script>
+    function ditAdd(n1, n2) {
+      let len1 = (n1 + '').split('.')[1];
+      let len2 = (n1 + '').split('.')[1];
+      len1 = len1 ? len1.length : 0;
+      len2 = len2 ? len2.length : 0;
+      let max = Math.max(len1, len2);
+      let pow = Math.pow(10, max);
+      return (n1 * pow + n2 * pow) / pow;
+    }
+    console.log(ditAdd(0.1, 1.2222));
+  </script>
+</html>

@@ -28,7 +28,7 @@
       };
     };
 
-    let throttle = function(fn, interval) {
+    let throttle1 = function(fn, interval) {
       let timer = null;
       return function(...args) {
         if (timer) return;
@@ -38,10 +38,29 @@
         }, interval);
       };
     };
-    
+
+    let throttle2 = function(fn, interval) {
+      let timer = null;
+      let date = Date.now();
+      return function(...args) {
+        let now = Date.now();
+        clearTimeout(timer);
+        if (now - date > interval) {
+          date = now;
+          fn.apply(this, args);
+        } else {
+          timer = setTimeout(() => {
+            timer = null;
+            date = now;
+            fn.apply(this, args);
+          }, interval);
+        }
+      };
+    };
+
     window.addEventListener(
       'scroll',
-      dubounce2(() => {
+      throttle2(() => {
         console.log(1);
       }, 500)
     );

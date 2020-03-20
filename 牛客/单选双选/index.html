@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    .checkgroup .item {
+      height: 42px;
+      line-height: 42px;
+      padding: 0 10px;
+      margin: 10px 0;
+      border: 1px solid #c7c7c7;
+      border-radius: 6px;
+    }
+    .checkgroup.radius .item {
+      border-radius: 21px;
+    }
+    .checkgroup .item.selected {
+      border: 1px solid #08b292;
+      background: #08b292;
+      color: #ffffff;
+    }
+  </style>
+  <body>
+    <div id="jsCheckGroup"></div>
+  </body>
+  <script>
+    function CheckGroup(renderTo, options, isMultiple) {
+      var that = this;
+      this._class = 'selected';
+      that.renderTo = renderTo;
+      that.options = options;
+      that.isMultiple = !!isMultiple;
+      that.initHtml();
+      that.initEvent();
+    }
+    CheckGroup.prototype.initHtml = fInitHtml;
+    CheckGroup.prototype.initEvent = fInitEvent;
+    CheckGroup.prototype.toggleEl = fToggleEl;
+    CheckGroup.prototype.isSelected = fIsSelected;
+    CheckGroup.prototype.val = fVal;
+
+    function fInitHtml() {
+      var that = this;
+      // 请补全代码，拼接html字符串
+      var items = '';
+      for (let i = 0; i < this.options.length; i++) {
+        let item = this.options[i];
+        items += `<div data-val="${item.value}" class="item ">${item.text}</div>`;
+      }
+      var sHtml = `<div class="checkgroup ${
+        that.isMultiple ? '' : 'radius'
+      }">${items}</div>`;
+      that.renderTo.innerHTML = sHtml;
+      // 请补全代码，获取checkgroup的dom元素引用
+      that.el = document.querySelector('.checkgroup');
+    }
+
+    function fInitEvent() {
+      var that = this;
+      that.el &&
+        that.el.addEventListener('click', function(event) {
+          var item = event.target;
+          item.classList.contains('item') && that.toggleEl(item);
+        });
+    }
+
+    function fToggleEl(item) {
+      // 根据当前是单选还是多选，以及当前元素是否选中，高亮/取消���亮指定的选项dom元素
+      var that = this;
+      if (that.isSelected(item, that._class)) {
+        // 请补全代码
+        item.className = item.className.replace(that._class, '');
+      } else if (that.isMultiple) {
+        // 请补全代码
+        item.className += that._class;
+      } else {
+        // 请补全代码
+        let len = that.el.children.length;
+        for (let i = 0; i < len; i++) {
+          let cur = that.el.children[i];
+          cur.className = cur.className.replace(that._class, '', 'g');
+        }
+        item.className += that._class;
+      }
+    }
+
+    function fIsSelected(item, _class) {
+      // 请补全代码，判断item是否选中
+      return item.className.indexOf(_class) !== -1;
+    }
+
+    function fVal(values) {
+      var that = this;
+      if (arguments.length === 0) {
+        // 请补全代码，获取高亮的选项元素
+        var items = this.el.children;
+        // 请补全代码，获取高亮的选项元素的data-val
+        var result = [];
+        let len = items.length;
+        for (let i = 0; i < len; i++) {
+          if (that.isSelected(items[i], that._class)) {
+            result.push(items[i].dataset.val);
+          }
+        }
+        return result;
+      }
+      !that.isMultiple && values.length > 1 && (values.length = 1);
+      // 请补全代码，获取所有的选项元素
+      var items = this.el.children;
+
+      let len = items.length;
+      for (let i = 0; i < len; i++) {
+        let cur = that.el.children[i];
+        cur.className = cur.className.replace(that._class, '', 'g');
+      }
+      // 请补全代码，在指定元素上加上高亮的class
+      for (let i = 0; i < values.length; i++) {
+        for (let i = 0; i < len; i++) {
+          if (
+            items[i].dataset.val === values[i] &&
+            !that.isSelected(items[i], that._class)
+          ) {
+            items[i].className += that._class;
+          }
+        }
+      }
+    }
+
+    var options = [
+      { text: '选项a', value: 'a' },
+      { text: '选项b', value: 'b' },
+      { text: '选项c', value: 'c' }
+    ];
+
+    var item = new CheckGroup(
+      document.getElementById('jsCheckGroup'),
+      options,
+      false
+    );
+  </script>
+</html>
